@@ -47,13 +47,14 @@ module.exports = async function handler(req, res) {
 
                 const extensao = produtoComprado === 'combo-all' ? 'zip' : 'pdf';
                 
-                // FORÇAMOS O NOME EXATO DO SEU BUCKET AQUI PARA EVITAR O ERRO DE BUCKET NÃO ENCONTRADO
                 const bucket = admin.storage().bucket('loja-ebooks-cristaos-8f1b6.firebasestorage.app');
                 const arquivo = bucket.file(`${produtoComprado}.${extensao}`);
                 
+                // ADICIONADO: Força o navegador a baixar o arquivo com o nome original
                 const [urlDownload] = await arquivo.getSignedUrl({
                     action: 'read',
                     expires: Date.now() + 24 * 60 * 60 * 1000, 
+                    responseDisposition: `attachment; filename="${produtoComprado}.${extensao}"`
                 });
 
                 await transporter.sendMail({
@@ -63,15 +64,15 @@ module.exports = async function handler(req, res) {
                     html: `
                         <div style="font-family: Arial, sans-serif; color: #333; padding: 20px;">
                             <h2 style="color: #27ae60;">A Paz do Senhor! O seu pagamento foi confirmado.</h2>
-                            <p>Clique no botão abaixo para baixar o seu material. <strong>Este link é válido por 24 horas.</strong></p>
+                            <p>Clique no botão abaixo para baixar o seu material diretamente para o seu dispositivo. <strong>Este link é válido por 24 horas.</strong></p>
                             <a href="${urlDownload}" style="background-color: #27ae60; color: white; padding: 15px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">
-                                Acessar Minha Leitura
+                                Baixar Meu E-book Agora
                             </a>
                         </div>
                     `
                 });
 
-                console.log("E-mail com o link de download enviado com sucesso!");
+                console.log("E-mail com link de download direto enviado com sucesso!");
             }
             
             return res.status(200).send('Webhook processado com sucesso');
