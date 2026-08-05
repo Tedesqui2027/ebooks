@@ -3,155 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteca Cristã - E-books</title>
+    <title>Coleção de E-books Cristãos</title>
     <style>
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; color: #333; }
+        
+        /* Capa Principal */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?auto=format&fit=crop&w=1920&q=80') center/cover;
+            color: white; text-align: center; padding: 120px 20px;
         }
-        body { 
-            background-color: #f4f7f6; 
-            color: #333; 
-        }
-        header { 
-            background: #2c3e50; 
-            color: white; 
-            padding: 60px 20px; 
-            text-align: center; 
-        }
-        header h1 { 
-            font-size: 2.8em; 
-            margin-bottom: 15px; 
-        }
-        header p { 
-            font-size: 1.2em; 
-            font-weight: 300; 
-            color: #bdc3c7;
-        }
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 50px 20px; 
-        }
-        .section-title { 
-            text-align: center; 
-            margin-bottom: 40px; 
-            color: #2c3e50; 
-            font-size: 2.2em; 
-        }
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-            gap: 25px; 
-            margin-bottom: 50px; 
-        }
-        .card { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            border-top: 4px solid #3498db; 
-            transition: transform 0.3s ease, box-shadow 0.3s ease; 
-        }
-        .card:hover { 
-            transform: translateY(-8px); 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        .combo-card { 
-            border-top: 5px solid #f1c40f; 
-            background: #fffdf5; 
-            grid-column: 1 / -1; 
-            max-width: 800px; 
-            margin: 0 auto; 
-            text-align: center; 
-            box-shadow: 0 8px 20px rgba(241, 196, 15, 0.15);
-        }
-        .card-img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            object-fit: cover;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .combo-card .card-img {
-            max-width: 400px;
-            margin: 0 auto 20px auto;
-            display: block;
-        }
-        .card h2 { 
-            font-size: 1.5em; 
-            margin-bottom: 15px; 
-            color: #2c3e50; 
-        }
-        .desc { 
-            color: #666; 
-            margin-bottom: 25px; 
-            line-height: 1.6; 
-            flex-grow: 1; 
-        }
-        .price { 
-            font-size: 2em; 
-            font-weight: bold; 
-            color: #27ae60; 
-            margin-bottom: 20px; 
-        }
-        .old-price { 
-            font-size: 0.55em; 
-            color: #e74c3c; 
-            text-decoration: line-through; 
-            display: block; 
-            font-weight: normal; 
-            margin-bottom: 5px; 
-        }
-        .btn { 
-            background: #3498db; 
-            color: white; 
-            border: none; 
-            padding: 16px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-size: 1.1em; 
-            font-weight: bold; 
-            transition: background 0.3s; 
-            width: 100%; 
-        }
-        .btn:hover { 
-            background: #2980b9; 
-        }
-        .btn-combo { 
-            background: #f39c12; 
-            font-size: 1.2em;
-            padding: 18px;
-        }
-        .btn-combo:hover { 
-            background: #e67e22; 
-        }
-        footer { 
-            background: #2c3e50; 
-            color: white; 
-            text-align: center; 
-            padding: 30px; 
-            margin-top: 20px; 
-        }
+        .hero h1 { font-size: 3em; margin-bottom: 15px; }
+        .hero p { font-size: 1.2em; max-width: 600px; margin: 0 auto; color: #e0e0e0; line-height: 1.6; }
+
+        .container { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
+        .section-title { text-align: center; margin-bottom: 40px; color: #2c3e50; font-size: 2.2em; }
+        
+        /* Banner de respiro visual */
+        .banner-img { width: 100%; height: 250px; object-fit: cover; border-radius: 12px; margin: 40px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+
+        /* Grid dos Livros */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid transparent; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-top: 4px solid #3498db; }
+        
+        /* Destaque para o Combo */
+        .combo-card { background: #f0fbf6; border: 2px solid #27ae60; grid-column: 1 / -1; align-items: center; text-align: center; }
+        .combo-card:hover { border-top: 2px solid #27ae60; }
+        
+        h2 { font-size: 20px; color: #2c3e50; margin-bottom: 10px; }
+        p.desc { color: #666; font-size: 15px; line-height: 1.5; }
+        .price { font-size: 24px; font-weight: bold; color: #27ae60; margin: 20px 0; }
+        .old-price { text-decoration: line-through; color: #95a5a6; font-size: 16px; margin-right: 10px; }
+        
+        /* Botões */
+        .btn { background-color: #2c3e50; color: white; border: none; padding: 15px; font-size: 16px; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; font-weight: bold; }
+        .btn:hover { background-color: #1a252f; }
+        .btn-combo { background-color: #27ae60; font-size: 18px; max-width: 400px; margin: 0 auto; }
+        .btn-combo:hover { background-color: #219150; }
+        .btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+
+        /* Rodapé */
+        footer { background-color: #2c3e50; color: white; text-align: center; padding: 30px; margin-top: 60px; }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Biblioteca Cristã</h1>
-        <p>Transforme sua vida com sabedoria e princípios baseados na Palavra.</p>
+
+    <header class="hero">
+        <h1>Alimento para a Alma</h1>
+        <p>Encontre direção, paz e sabedoria através da nossa coleção de obras inspiradas na Palavra. Transforme sua jornada diária com leituras que edificam.</p>
     </header>
 
     <div class="container">
-        <h2 class="section-title">Nossos E-books</h2>
+        <h2 class="section-title">Nossa Biblioteca</h2>
+        
         <div id="produtos-container" class="grid"></div>
 
-        <h2 class="section-title" style="margin-top: 40px;">Oferta Especial</h2>
+        <img src="https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=1200&q=80" alt="Luz do sol e paz" class="banner-img">
+
+        <h2 class="section-title" style="margin-top: 20px;">Oferta Especial</h2>
         <div id="combo-container" class="grid"></div>
     </div>
 
@@ -184,7 +94,7 @@
             <p style="margin: 15px 0; font-size: 14px; color: #666;">Ou use o Pix Copia e Cola:</p>
             <input type="text" id="input-copiacola" readonly style="width:100%; padding:10px; font-size:12px; color:#555; background:#f9f9f9; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; text-align:center;">
             
-            <!-- Botão de copiar sem aquele alerta feio -->
+            <!-- Botão de copiar sem o alert() -->
             <button id="btn-copiar-pix" onclick="copiarPix()" style="background:#3498db; color:white; border:none; padding:12px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-bottom: 20px; width: 100%; transition: 0.3s;">Copiar Código Pix</button>
             
             <div id="status-pagamento" style="background:#f1c40f22; color:#f39c12; padding:15px; border-radius:8px; font-weight:bold;">⏳ Aguardando pagamento...</div>
@@ -195,22 +105,20 @@
     </div>
 
     <script>
-        // CATÁLOGO DE PRODUTOS
         const produtosAvulsos = [
-            { id: 'ebook-1', titulo: 'O Tesouro que Não Perece', desc: 'Descubra a verdadeira riqueza espiritual e valores eternos.', preco: 29.90, imagem: 'img/ebook-1.jpg' },
-            { id: 'ebook-2', titulo: 'Educação dos Filhos', desc: 'Princípios bíblicos práticos para a criação da sua família.', preco: 29.90, imagem: 'img/ebook-2.jpg' },
-            { id: 'ebook-3', titulo: 'Paz para a Mente Ansiosa', desc: 'Encontre descanso e conforto em Deus para os dias agitados.', preco: 29.90, imagem: 'img/ebook-3.jpg' },
-            { id: 'ebook-4', titulo: 'Finanças Segundo a Bíblia', desc: 'Sabedoria financeira à luz da Palavra para uma vida próspera.', preco: 29.90, imagem: 'img/ebook-4.jpg' },
-            { id: 'ebook-5', titulo: 'Libertos das Correntes', desc: 'Um guia prático para alcançar a verdadeira liberdade espiritual.', preco: 29.90, imagem: 'img/ebook-5.jpg' },
-            { id: 'ebook-6', titulo: 'Luz na Escuridão', desc: 'Esperança, fé e direção divina para superar tempos difíceis.', preco: 29.90, imagem: 'img/ebook-6.jpg' },
-            { id: 'ebook-7', titulo: 'Alimentados pela Palavra', desc: 'Devocional diário para nutrição e fortalecimento da sua fé.', preco: 29.90, imagem: 'img/ebook-7.jpg' },
-            { id: 'ebook-8', titulo: 'Casamento Segundo a Bíblia', desc: 'Princípios sagrados para construir uma união duradoura e forte.', preco: 29.90, imagem: 'img/ebook-8.jpg' },
-            { id: 'ebook-9', titulo: 'Libertados pelo Poder', desc: 'Experimente o agir transformador do Evangelho na sua vida.', preco: 29.90, imagem: 'img/ebook-9.jpg' }
+            { id: 'ebook-1', titulo: 'O Tesouro que Não Perece', desc: 'Descubra a verdadeira riqueza espiritual e valores eternos.', preco: 29.90 },
+            { id: 'ebook-2', titulo: 'Educação dos Filhos', desc: 'Princípios bíblicos práticos para a criação da sua família.', preco: 29.90 },
+            { id: 'ebook-3', titulo: 'Paz para a Mente Ansiosa', desc: 'Encontre descanso e conforto em Deus para os dias agitados.', preco: 29.90 },
+            { id: 'ebook-4', titulo: 'Finanças Segundo a Bíblia', desc: 'Sabedoria financeira à luz da Palavra para uma vida próspera.', preco: 29.90 },
+            { id: 'ebook-5', titulo: 'Libertos das Correntes', desc: 'Um guia prático para alcançar a verdadeira liberdade espiritual.', preco: 29.90 },
+            { id: 'ebook-6', titulo: 'Luz na Escuridão', desc: 'Esperança, fé e direção divina para superar tempos difíceis.', preco: 29.90 },
+            { id: 'ebook-7', titulo: 'Alimentados pela Palavra', desc: 'Devocional diário para nutrição e fortalecimento da sua fé.', preco: 29.90 },
+            { id: 'ebook-8', titulo: 'Casamento Segundo a Bíblia', desc: 'Princípios sagrados para construir uma união duradoura e forte.', preco: 29.90 },
+            { id: 'ebook-9', titulo: 'Libertados pelo Poder', desc: 'Experimente o agir transformador do Evangelho na sua vida.', preco: 29.90 }
         ];
 
-        const combo = { id: 'combo-all', titulo: 'Coleção Completa: Os 9 E-books', desc: 'Leve toda a nossa biblioteca de sabedoria cristã de uma só vez e garanta um super desconto exclusivo.', preco: 149.90, precoAntigo: 269.10, imagem: 'img/combo.jpg', isCombo: true };
+        const combo = { id: 'combo-all', titulo: 'Coleção Completa: Os 9 E-books', desc: 'Leve toda a nossa biblioteca de sabedoria cristã de uma só vez e garanta um super desconto exclusivo.', preco: 149.90, precoAntigo: 269.10, isCombo: true };
 
-        // FUNÇÃO DE RENDERIZAÇÃO
         function renderizarProduto(prod, container) {
             const card = document.createElement('div');
             card.className = `card ${prod.isCombo ? 'combo-card' : ''}`;
@@ -219,14 +127,14 @@
                 ? `<div class="price"><span class="old-price">R$ ${prod.precoAntigo.toFixed(2)}</span> R$ ${prod.preco.toFixed(2)}</div>`
                 : `<div class="price">R$ ${prod.preco.toFixed(2)}</div>`;
 
+            // Mantive EXATAMENTE o seu HTML original aqui para os títulos não bugarem
             card.innerHTML = `
-                <img src="${prod.imagem}" alt="${prod.titulo}" class="card-img">
                 <div>
                     <h2>${prod.titulo}</h2>
                     <p class="desc">${prod.desc}</p>
                 </div>
                 ${priceHTML}
-                <button class="btn ${prod.isCombo ? 'btn-combo' : ''}" onclick="abrirModal('${prod.id}')">
+                <button id="btn-${prod.id}" class="btn ${prod.isCombo ? 'btn-combo' : ''}" onclick="abrirModal('${prod.id}')">
                     ${prod.isCombo ? 'Garantir Combo Completo' : 'Comprar Agora'}
                 </button>
             `;
@@ -236,7 +144,7 @@
         produtosAvulsos.forEach(prod => renderizarProduto(prod, 'produtos-container'));
         renderizarProduto(combo, 'combo-container');
 
-        // LÓGICA DOS MODAIS
+        // --- LÓGICA DO CHECKOUT TRANSPARENTE ---
         let produtoSelecionadoId = null;
         let verificadorIntervalo = null;
 
@@ -262,7 +170,7 @@
             }
         }
 
-        // NOVO SISTEMA DE COPIAR SEM ALERT()
+        // Função de copiar sem alert
         function copiarPix() {
             const input = document.getElementById('input-copiacola');
             input.select();
@@ -271,18 +179,15 @@
             const btn = document.getElementById('btn-copiar-pix');
             const textoOriginal = "Copiar Código Pix";
             
-            // Muda a aparência do botão instantaneamente
             btn.innerText = "✅ Copiado!";
             btn.style.background = "#27ae60";
             
-            // Volta ao normal depois de 2 segundos
             setTimeout(() => {
                 btn.innerText = textoOriginal;
                 btn.style.background = "#3498db";
             }, 2000);
         }
 
-        // COMUNICAÇÃO COM O BACKEND PARA GERAR O PIX
         async function confirmarCompra() {
             const email = document.getElementById('cliente-email').value;
             const confirma = document.getElementById('cliente-email-confirma').value;
@@ -315,14 +220,12 @@
                     document.getElementById('img-qrcode').src = "data:image/jpeg;base64," + data.qrCodeBase64;
                     document.getElementById('input-copiacola').value = data.copiaECola;
                     
-                    // Reseta o modal do Pix para o visual original (caso seja a segunda compra da pessoa)
                     const statusDiv = document.getElementById('status-pagamento');
                     statusDiv.innerHTML = "⏳ Aguardando pagamento...";
                     statusDiv.style.color = "#f39c12";
                     statusDiv.style.background = "#f1c40f22";
                     document.getElementById('pix-titulo').innerText = "Escaneie para Pagar";
                     
-                    // Reseta o botão de voltar para o padrão
                     const btnVoltar = document.getElementById('btn-fechar-pix');
                     btnVoltar.innerText = "Fechar e cancelar";
                     btnVoltar.style.background = "transparent";
@@ -334,16 +237,15 @@
 
                     verificadorIntervalo = setInterval(() => checarStatus(data.paymentId), 5000);
                 } else {
-                    alert("Erro ao gerar Pix no Mercado Pago:\n" + JSON.stringify(data));
+                    alert("Erro ao iniciar o pagamento. Tente novamente.");
                     fecharPix();
                 }
             } catch (error) {
-                alert("Ocorreu um erro de rede ao tentar gerar o Pix.");
+                alert("Ocorreu um erro de conexão.");
                 fecharPix();
             }
         }
 
-        // COMUNICAÇÃO COM O BACKEND PARA CHECAR SE FOI PAGO
         async function checarStatus(paymentId) {
             try {
                 const res = await fetch(`/api/success-pix?id=${paymentId}`);
@@ -360,7 +262,6 @@
                     
                     document.getElementById('pix-titulo').innerText = "🎉 Sucesso!";
                     
-                    // TRANSFORMA O LINK DE FECHAR EM UM BOTÃO GIGANTE DE VOLTAR
                     const btnVoltar = document.getElementById('btn-fechar-pix');
                     btnVoltar.innerText = "⬅ VOLTAR PARA A LOJA";
                     btnVoltar.style.background = "#27ae60";
@@ -371,17 +272,16 @@
                     btnVoltar.style.fontWeight = "bold";
                 }
             } catch (e) {
-                console.log("Checando status do pagamento em segundo plano...");
+                console.log("Checando status...");
             }
         }
 
         window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                const btn = document.getElementById('btn-confirmar');
-                if (btn) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                document.querySelectorAll('.btn').forEach(btn => {
                     btn.disabled = false;
-                    btn.innerText = "Gerar Código Pix";
-                }
+                    btn.innerText = btn.classList.contains('btn-combo') ? "Garantir Combo Completo" : "Comprar Agora";
+                });
             }
         });
     </script>
