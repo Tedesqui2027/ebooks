@@ -36,15 +36,22 @@ module.exports = async function handler(req, res) {
             const payment = new Payment(client);
             const infoPagamento = await payment.get({ id: data.id });
 
-            console.log("Status do pagamento recebido no webhook:", infoPagamento.status);
+            console.log("Status do pagamento recebido:", infoPagamento.status);
 
             if (infoPagamento.status === 'approved') {
                 const produtoComprado = infoPagamento.external_reference; 
-                const emailDoCliente = infoPagamento.payer.email;
+                
+                // Tenta pegar o e-mail de várias propriedades possíveis do Mercado Pago para evitar falhas
+                const emailDoCliente = infoPagamento.payer?.email || infoPagamento.metadata?.payer_email;
                 
                 if (!produtoComprado) {
                     console.error("ERRO: Pagamento aprovado, mas sem external_reference.");
                     return res.status(400).send("Faltou a referência do produto");
+                }
+
+                if (!emailDoCliente) {
+                    console.error("ERRO: E-mail do cliente não encontrado no objeto de pagamento do MP:", JSON.stringify(infoPagamento));
+                    return res.status(400).send("E-mail do cliente não identificado");
                 }
 
                 const extensao = produtoComprado === 'combo-all' ? 'zip' : 'pdf';
@@ -55,7 +62,7 @@ module.exports = async function handler(req, res) {
                     expires: Date.now() + 24 * 60 * 60 * 1000, 
                 });
 
-                console.log("Tentando enviar e-mail para:", emailDoCliente);
+                console.log("Enviando e-mail para:", emailDoCliente);
 
                 await transporter.sendMail({
                     from: `"Biblioteca Cristã" <${process.env.EMAIL_USER}>`,
