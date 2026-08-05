@@ -142,7 +142,7 @@
             if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
                 document.querySelectorAll('.btn').forEach(btn => {
                     btn.disabled = false;
-                    btn.innerText = btn.classList.contains('btn-combo') ? "Garantir Combo Completo" : "Comprar Agora";
+                    btn.innerText = btn.classList.contains('btn-combo') ? "Garantir Combo Completo" : "Comprar Agora!";
                 });
             }
         });
