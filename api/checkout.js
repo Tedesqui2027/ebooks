@@ -20,7 +20,7 @@ module.exports = async function handler(req, res) {
     const produtoSelecionado = catalogo[produtoId];
 
     if (!produtoSelecionado || !email) {
-        return res.status(400).json({ erroMercadoPago: 'Produto não encontrado no backend ou e-mail vazio.' });
+        return res.status(400).json({ erroMercadoPago: 'Produto não encontrado ou e-mail vazio.' });
     }
 
     try {
@@ -35,27 +35,24 @@ module.exports = async function handler(req, res) {
                 transaction_amount: produtoSelecionado.preco,
                 description: produtoSelecionado.titulo,
                 payment_method_id: 'pix',
-                payer: {
-                    email: email
-                },
+                payer: { email: email },
                 date_of_expiration: dataExpiracao.toISOString(),
                 notification_url: 'https://ebooks-omega.vercel.app/api/webhook',
                 external_reference: produtoId
             }
         });
 
-        const linkPix = response.point_of_interaction?.transaction_data?.ticket_url;
+        // Pegamos os dados reais do QR Code!
+        const qrCodeBase64 = response.point_of_interaction?.transaction_data?.qr_code_base64;
+        const copiaECola = response.point_of_interaction?.transaction_data?.qr_code;
+        const paymentId = response.id;
 
-        if (linkPix) {
-            res.status(200).json({ url: linkPix });
+        if (qrCodeBase64) {
+            res.status(200).json({ qrCodeBase64, copiaECola, paymentId });
         } else {
-            res.status(400).json({ erroMercadoPago: 'Pagamento gerado, mas MP não devolveu o link Pix.', detalhes: response });
+            res.status(400).json({ erroMercadoPago: 'MP não devolveu o QR Code.' });
         }
     } catch (error) {
-        console.error("Erro capturado do Mercado Pago:", error);
-        res.status(500).json({ 
-            erroMercadoPago: error.message || 'Erro de comunicação', 
-            detalhes: error.cause || error
-        });
+        res.status(500).json({ erroMercadoPago: error.message || 'Erro de comunicação' });
     }
 }
