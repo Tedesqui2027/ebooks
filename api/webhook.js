@@ -1,6 +1,6 @@
-import { MercadoPagoConfig, Payment } from 'mercadopago';
-import admin from 'firebase-admin';
-import nodemailer from 'nodemailer';
+const { MercadoPagoConfig, Payment } = require('mercadopago');
+const admin = require('firebase-admin');
+const nodemailer = require('nodemailer');
 
 if (!admin.apps.length) {
     admin.initializeApp({
@@ -13,7 +13,6 @@ if (!admin.apps.length) {
     });
 }
 
-// Configuração ajustada para o Gmail e para as variáveis EMAIL_USER que criamos
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -24,7 +23,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).send('Método não permitido');
     }
@@ -41,7 +40,6 @@ export default async function handler(req, res) {
                 const produtoComprado = infoPagamento.external_reference; 
                 const emailDoCliente = infoPagamento.payer.email;
                 
-                // Trava de segurança caso o pagamento venha sem referência
                 if (!produtoComprado) {
                     console.error("ERRO: Pagamento aprovado, mas sem external_reference.");
                     return res.status(400).send("Faltou a referência do produto");
@@ -71,7 +69,6 @@ export default async function handler(req, res) {
                 });
             }
             
-            // O SUCESSO VEM NO FINAL! Agora a Vercel espera o e-mail sair antes de fechar a conexão.
             return res.status(200).send('Webhook processado e e-mail enviado com sucesso');
             
         } catch (error) {
@@ -80,6 +77,5 @@ export default async function handler(req, res) {
         }
     }
     
-    // Resposta padrão caso o Mercado Pago envie outro tipo de notificação que não seja 'payment'
     return res.status(200).send('Notificação recebida, mas não era de pagamento');
 }
