@@ -46,7 +46,9 @@ module.exports = async function handler(req, res) {
                 }
 
                 const extensao = produtoComprado === 'combo-all' ? 'zip' : 'pdf';
-                const arquivo = admin.storage().bucket().file(`ebooks/${produtoComprado}.${extensao}`);
+                
+                // CORRIGIDO: Removido o prefixo 'ebooks/' para buscar o arquivo direto na raiz do Storage
+                const arquivo = admin.storage().bucket().file(`${produtoComprado}.${extensao}`);
                 
                 const [urlDownload] = await arquivo.getSignedUrl({
                     action: 'read',
