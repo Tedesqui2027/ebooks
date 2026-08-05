@@ -36,33 +36,25 @@ module.exports = async function handler(req, res) {
             const payment = new Payment(client);
             const infoPagamento = await payment.get({ id: data.id });
 
-            console.log("Status do pagamento recebido:", infoPagamento.status);
-
             if (infoPagamento.status === 'approved') {
                 const produtoComprado = infoPagamento.external_reference; 
-                
-                // Pega o e-mail blindado que salvamos no metadata, ou tenta o padrão do payer
                 const emailDoCliente = infoPagamento.metadata?.client_email || infoPagamento.payer?.email;
                 
-                if (!produtoComprado) {
-                    console.error("ERRO: Pagamento aprovado, mas sem external_reference.");
-                    return res.status(400).send("Faltou a referência do produto");
-                }
-
-                if (!emailDoCliente) {
-                    console.error("ERRO: E-mail do cliente não encontrado nos metadados.");
-                    return res.status(400).send("E-mail do cliente não identificado");
+                if (!produtoComprado || !emailDoCliente) {
+                    console.error("ERRO: Faltou referência ou e-mail.");
+                    return res.status(400).send("Dados incompletos");
                 }
 
                 const extensao = produtoComprado === 'combo-all' ? 'zip' : 'pdf';
-                const arquivo = admin.storage().bucket().file(`${produtoComprado}.${extensao}`);
+                
+                // FORÇAMOS O NOME EXATO DO SEU BUCKET AQUI PARA EVITAR O ERRO DE BUCKET NÃO ENCONTRADO
+                const bucket = admin.storage().bucket('loja-ebooks-cristaos-8f1b6.firebasestorage.app');
+                const arquivo = bucket.file(`${produtoComprado}.${extensao}`);
                 
                 const [urlDownload] = await arquivo.getSignedUrl({
                     action: 'read',
                     expires: Date.now() + 24 * 60 * 60 * 1000, 
                 });
-
-                console.log("Enviando e-mail de entrega para:", emailDoCliente);
 
                 await transporter.sendMail({
                     from: `"Biblioteca Cristã" <${process.env.EMAIL_USER}>`,
@@ -79,7 +71,7 @@ module.exports = async function handler(req, res) {
                     `
                 });
 
-                console.log("E-mail enviado com sucesso!");
+                console.log("E-mail com o link de download enviado com sucesso!");
             }
             
             return res.status(200).send('Webhook processado com sucesso');
