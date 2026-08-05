@@ -159,7 +159,7 @@
         <p>© 2026 Biblioteca Cristã. Todos os direitos reservados.</p>
     </footer>
 
-    <!-- JANELA FLUTUANTE COM DUPLA CONFIRMAÇÃO DE E-MAIL -->
+    <!-- MODAL 1: PEDIR E-MAIL -->
     <div id="email-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999; justify-content:center; align-items:center;">
         <div style="background:white; padding:35px; border-radius:12px; text-align:center; max-width:400px; width:90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
             <h3 style="color:#2c3e50; margin-bottom:12px; font-size:1.4em;">Para onde enviamos o E-book?</h3>
@@ -171,6 +171,23 @@
             
             <button id="btn-confirmar" onclick="confirmarCompra()" style="background:#27ae60; color:white; border:none; padding:16px; border-radius:8px; cursor:pointer; width:100%; font-size:16px; font-weight:bold; transition:0.3s;">Gerar Código Pix</button>
             <button onclick="fecharModal()" style="background:transparent; color:#95a5a6; border:none; margin-top:20px; cursor:pointer; font-size:15px; text-decoration:underline;">Cancelar compra</button>
+        </div>
+    </div>
+
+    <!-- MODAL 2: TELA DO PIX COM QR CODE -->
+    <div id="pix-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center;">
+        <div style="background:white; padding:30px; border-radius:12px; text-align:center; max-width:400px; width:90%; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+            <h2 id="pix-titulo" style="color:#2c3e50; margin-bottom:15px;">Escaneie para Pagar</h2>
+            
+            <img id="img-qrcode" src="" alt="QR Code Pix" style="width:200px; height:200px; margin: 0 auto; display:block; border: 4px solid #eee; border-radius: 8px;">
+            
+            <p style="margin: 15px 0; font-size: 14px; color: #666;">Ou use o Pix Copia e Cola:</p>
+            <input type="text" id="input-copiacola" readonly style="width:100%; padding:10px; font-size:12px; color:#555; background:#f9f9f9; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; text-align:center;">
+            <button onclick="copiarPix()" style="background:#3498db; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-bottom: 20px;">Copiar Código</button>
+            
+            <div id="status-pagamento" style="background:#f1c40f22; color:#f39c12; padding:15px; border-radius:8px; font-weight:bold;">⏳ Aguardando pagamento...</div>
+            
+            <button id="btn-fechar-pix" onclick="fecharPix()" style="background:transparent; color:#95a5a6; border:none; margin-top:20px; cursor:pointer; text-decoration:underline;">Fechar e cancelar</button>
         </div>
     </div>
 
@@ -218,6 +235,7 @@
 
         // LÓGICA DO MODAL
         let produtoSelecionadoId = null;
+        let verificadorIntervalo = null;
 
         function abrirModal(produtoId) {
             produtoSelecionadoId = produtoId;
@@ -230,12 +248,30 @@
             document.getElementById('cliente-email-confirma').value = ''; 
         }
 
-        // COMUNICAÇÃO COM O BACKEND
+        function fecharPix() {
+            document.getElementById('pix-modal').style.display = 'none';
+            if (verificadorIntervalo) clearInterval(verificadorIntervalo);
+            
+            // Restaura o botão da janela de e-mail caso a pessoa abra de novo
+            const btn = document.getElementById('btn-confirmar');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerText = "Gerar Código Pix";
+            }
+        }
+
+        function copiarPix() {
+            const input = document.getElementById('input-copiacola');
+            input.select();
+            document.execCommand('copy');
+            alert('Código Pix copiado com sucesso!');
+        }
+
+        // COMUNICAÇÃO COM O BACKEND PARA GERAR O PIX
         async function confirmarCompra() {
             const email = document.getElementById('cliente-email').value;
             const confirma = document.getElementById('cliente-email-confirma').value;
             
-            // Verifica se está vazio e se os e-mails são iguais
             if (!email || !email.includes('@')) {
                 alert("Por favor, digite um e-mail válido.");
                 return;
@@ -247,7 +283,7 @@
 
             const btn = document.getElementById('btn-confirmar');
             btn.disabled = true;
-            btn.innerText = "Processando conexão segura...";
+            btn.innerText = "Gerando seu Pix...";
 
             try {
                 const response = await fetch('/api/checkout', {
@@ -258,21 +294,59 @@
                 
                 const data = await response.json();
                 
-                if (data.url) {
-                    window.location.href = data.url; 
+                if (data.qrCodeBase64) {
+                    fecharModal(); // Fecha a tela de e-mail
+                    
+                    // Preenche e mostra a tela do Pix
+                    document.getElementById('img-qrcode').src = "data:image/jpeg;base64," + data.qrCodeBase64;
+                    document.getElementById('input-copiacola').value = data.copiaECola;
+                    
+                    // Reseta o visual do status caso a pessoa esteja fazendo uma segunda compra
+                    const statusDiv = document.getElementById('status-pagamento');
+                    statusDiv.innerHTML = "⏳ Aguardando pagamento...";
+                    statusDiv.style.color = "#f39c12";
+                    statusDiv.style.background = "#f1c40f22";
+                    document.getElementById('pix-titulo').innerText = "Escaneie para Pagar";
+                    document.getElementById('btn-fechar-pix').innerText = "Fechar e cancelar";
+                    
+                    document.getElementById('pix-modal').style.display = 'flex';
+
+                    // Inicia a verificação de pagamento a cada 5 segundos
+                    verificadorIntervalo = setInterval(() => checarStatus(data.paymentId), 5000);
                 } else {
-                    alert("MOTIVO DA RECUSA DO MERCADO PAGO:\n\n" + JSON.stringify(data, null, 2));
-                    btn.disabled = false;
-                    btn.innerText = "Gerar Código Pix";
+                    alert("Erro ao gerar Pix no Mercado Pago:\n" + JSON.stringify(data));
+                    fecharPix();
                 }
             } catch (error) {
-                alert("Ocorreu um erro de rede: " + error.message);
-                btn.disabled = false;
-                btn.innerText = "Gerar Código Pix";
+                alert("Ocorreu um erro de rede ao tentar gerar o Pix.");
+                fecharPix();
             }
         }
 
-        // DESTRAVA O BOTÃO SE O USUÁRIO CLICAR EM "VOLTAR" NO NAVEGADOR
+        // COMUNICAÇÃO COM O BACKEND PARA CHECAR SE FOI PAGO
+        async function checarStatus(paymentId) {
+            try {
+                const res = await fetch(`/api/success-pix?id=${paymentId}`);
+                const data = await res.json();
+                
+                if (data.status === 'approved') {
+                    clearInterval(verificadorIntervalo); // Para de checar
+                    
+                    // Atualiza a tela de Pix com a mensagem de sucesso
+                    const statusDiv = document.getElementById('status-pagamento');
+                    statusDiv.innerHTML = "✅ Pagamento Aprovado!<br><br><span style='font-size:13px; font-weight:normal; color:#333;'>Seu E-book foi enviado para o seu e-mail. Verifique a caixa de entrada (e o Spam).</span>";
+                    statusDiv.style.background = "#d4edda";
+                    statusDiv.style.color = "#155724";
+                    
+                    document.getElementById('pix-titulo').innerText = "Sucesso!";
+                    document.getElementById('btn-fechar-pix').innerText = "Voltar para a loja";
+                }
+            } catch (e) {
+                console.log("Checando status do pagamento em segundo plano...");
+            }
+        }
+
+        // DESTRAVA O BOTÃO SE O USUÁRIO CLICAR EM "VOLTAR" NO NAVEGADOR (P/ CELULARES)
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
                 const btn = document.getElementById('btn-confirmar');
