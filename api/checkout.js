@@ -42,7 +42,7 @@ export default async function handler(req, res) {
                 // NOVAS LINHAS ADICIONADAS AQUI:
                 date_of_expiration: dataExpiracao.toISOString(),
                 notification_url: 'https://ebooks-omega.vercel.app/api/webhook'
-            }
+                external_reference: produtoId // <-- ESSA É A LINHA NOVA            }
         });
 
         const linkPix = response.point_of_interaction?.transaction_data?.ticket_url;
