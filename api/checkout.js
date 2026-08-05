@@ -38,11 +38,13 @@ module.exports = async function handler(req, res) {
                 payer: { email: email },
                 date_of_expiration: dataExpiracao.toISOString(),
                 notification_url: 'https://ebooks-omega.vercel.app/api/webhook',
-                external_reference: produtoId
+                external_reference: produtoId,
+                metadata: {
+                    client_email: email // Guardamos o e-mail aqui de forma blindada!
+                }
             }
         });
 
-        // Pegamos os dados reais do QR Code!
         const qrCodeBase64 = response.point_of_interaction?.transaction_data?.qr_code_base64;
         const copiaECola = response.point_of_interaction?.transaction_data?.qr_code;
         const paymentId = response.id;
