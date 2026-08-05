@@ -27,6 +27,10 @@ export default async function handler(req, res) {
         const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
         const payment = new Payment(client);
 
+        // Define a validade do Pix para 30 minutos no futuro
+        const dataExpiracao = new Date();
+        dataExpiracao.setMinutes(dataExpiracao.getMinutes() + 30);
+
         const response = await payment.create({
             body: {
                 transaction_amount: produtoSelecionado.preco,
@@ -34,7 +38,10 @@ export default async function handler(req, res) {
                 payment_method_id: 'pix',
                 payer: {
                     email: email
-                }
+                },
+                // NOVAS LINHAS ADICIONADAS AQUI:
+                date_of_expiration: dataExpiracao.toISOString(),
+                notification_url: 'https://ebooks-omega.vercel.app/api/webhook'
             }
         });
 
@@ -47,7 +54,6 @@ export default async function handler(req, res) {
         }
     } catch (error) {
         console.error("Erro capturado do Mercado Pago:", error);
-        // Devolvemos o erro exato para a tela do site
         res.status(500).json({ 
             erroMercadoPago: error.message || 'Erro de comunicação', 
             detalhes: error.cause || error
