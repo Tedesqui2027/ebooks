@@ -271,6 +271,17 @@
                 btn.innerText = "Gerar Código Pix";
             }
         }
+
+        // DESTRAVA O BOTÃO SE O USUÁRIO CLICAR EM "VOLTAR" NO NAVEGADOR
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                const btn = document.getElementById('btn-confirmar');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerText = "Gerar Código Pix";
+                }
+            }
+        });
     </script>
 </body>
 </html>
