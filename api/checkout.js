@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
     const preference = new Preference(client);
 
-    // Substitua esta URL pelo domínio real do seu site após publicar na Vercel
+    // DICA: Troque para o domínio real do seu site na Vercel
     const urlSite = "https://seusite-na-vercel.app";
 
     try {
@@ -39,6 +39,12 @@ export default async function handler(req, res) {
                         currency_id: 'BRL'
                     }
                 ],
+                // BLOQUEIA O BOLETO E DÁ PRIORIDADE AO PIX E CARTÃO
+                payment_methods: {
+                    excluded_payment_types: [
+                        { id: "ticket" } 
+                    ]
+                },
                 external_reference: produtoId,
                 back_urls: {
                     success: `${urlSite}/sucesso.html`,
