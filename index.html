@@ -71,8 +71,6 @@
             text-align: center; 
             box-shadow: 0 8px 20px rgba(241, 196, 15, 0.15);
         }
-        
-        /* ESTILO PARA AS IMAGENS RESTAURADAS */
         .card-img {
             width: 100%;
             height: auto;
@@ -86,7 +84,6 @@
             margin: 0 auto 20px auto;
             display: block;
         }
-
         .card h2 { 
             font-size: 1.5em; 
             margin-bottom: 15px; 
@@ -162,13 +159,15 @@
         <p>© 2026 Biblioteca Cristã. Todos os direitos reservados.</p>
     </footer>
 
-    <!-- JANELA FLUTUANTE PARA PEDIR O E-MAIL ANTES DO PIX -->
+    <!-- JANELA FLUTUANTE COM DUPLA CONFIRMAÇÃO DE E-MAIL -->
     <div id="email-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999; justify-content:center; align-items:center;">
         <div style="background:white; padding:35px; border-radius:12px; text-align:center; max-width:400px; width:90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
             <h3 style="color:#2c3e50; margin-bottom:12px; font-size:1.4em;">Para onde enviamos o E-book?</h3>
-            <p style="color:#666; margin-bottom:25px; font-size:15px; line-height: 1.4;">Digite o e-mail onde você receberá o material automaticamente após o pagamento via Pix:</p>
+            <p style="color:#666; margin-bottom:20px; font-size:15px; line-height: 1.4;">Digite com atenção, pois o material será enviado automaticamente para ele:</p>
             
-            <input type="email" id="cliente-email" placeholder="seu.melhor@email.com" style="width:100%; padding:14px; margin-bottom:20px; border:1px solid #ccc; border-radius:8px; font-size:16px; outline:none; transition: border-color 0.3s;">
+            <input type="email" id="cliente-email" placeholder="Digite seu melhor e-mail" style="width:100%; padding:14px; margin-bottom:12px; border:1px solid #ccc; border-radius:8px; font-size:16px; outline:none; transition: border-color 0.3s;">
+            
+            <input type="email" id="cliente-email-confirma" placeholder="Confirme o e-mail digitado acima" style="width:100%; padding:14px; margin-bottom:25px; border:1px solid #ccc; border-radius:8px; font-size:16px; outline:none; transition: border-color 0.3s;">
             
             <button id="btn-confirmar" onclick="confirmarCompra()" style="background:#27ae60; color:white; border:none; padding:16px; border-radius:8px; cursor:pointer; width:100%; font-size:16px; font-weight:bold; transition:0.3s;">Gerar Código Pix</button>
             <button onclick="fecharModal()" style="background:transparent; color:#95a5a6; border:none; margin-top:20px; cursor:pointer; font-size:15px; text-decoration:underline;">Cancelar compra</button>
@@ -176,8 +175,7 @@
     </div>
 
     <script>
-        // CATÁLOGO DE PRODUTOS COM IMAGENS RESTAURADAS
-        // Altere o caminho "img/nome-da-imagem.jpg" para a pasta correta onde estão suas imagens (ex: "assets/ebook-1.jpg")
+        // CATÁLOGO DE PRODUTOS
         const produtosAvulsos = [
             { id: 'ebook-1', titulo: 'O Tesouro que Não Perece', desc: 'Descubra a verdadeira riqueza espiritual e valores eternos.', preco: 29.90, imagem: 'img/ebook-1.jpg' },
             { id: 'ebook-2', titulo: 'Educação dos Filhos', desc: 'Princípios bíblicos práticos para a criação da sua família.', preco: 29.90, imagem: 'img/ebook-2.jpg' },
@@ -201,7 +199,6 @@
                 ? `<div class="price"><span class="old-price">R$ ${prod.precoAntigo.toFixed(2)}</span> R$ ${prod.preco.toFixed(2)}</div>`
                 : `<div class="price">R$ ${prod.preco.toFixed(2)}</div>`;
 
-            // Tag img adicionada aqui
             card.innerHTML = `
                 <img src="${prod.imagem}" alt="${prod.titulo}" class="card-img" onerror="this.style.display='none'">
                 <div>
@@ -219,7 +216,7 @@
         produtosAvulsos.forEach(prod => renderizarProduto(prod, 'produtos-container'));
         renderizarProduto(combo, 'combo-container');
 
-        // LÓGICA DO PIX (MODAL E INTEGRAÇÃO API)
+        // LÓGICA DO MODAL
         let produtoSelecionadoId = null;
 
         function abrirModal(produtoId) {
@@ -230,13 +227,21 @@
         function fecharModal() {
             document.getElementById('email-modal').style.display = 'none';
             document.getElementById('cliente-email').value = ''; 
+            document.getElementById('cliente-email-confirma').value = ''; 
         }
 
-        // SISTEMA ATUALIZADO PARA CAPTURAR O ERRO DO MERCADO PAGO
+        // COMUNICAÇÃO COM O BACKEND
         async function confirmarCompra() {
             const email = document.getElementById('cliente-email').value;
+            const confirma = document.getElementById('cliente-email-confirma').value;
+            
+            // Verifica se está vazio e se os e-mails são iguais
             if (!email || !email.includes('@')) {
-                alert("Por favor, digite um e-mail válido para onde enviaremos o E-book.");
+                alert("Por favor, digite um e-mail válido.");
+                return;
+            }
+            if (email !== confirma) {
+                alert("Os e-mails digitados não são iguais. Por favor, corrija para não perder seu e-book.");
                 return;
             }
 
@@ -256,7 +261,6 @@
                 if (data.url) {
                     window.location.href = data.url; 
                 } else {
-                    // MOSTRA O ERRO EXATO QUE VEIO DO BACKEND
                     alert("MOTIVO DA RECUSA DO MERCADO PAGO:\n\n" + JSON.stringify(data, null, 2));
                     btn.disabled = false;
                     btn.innerText = "Gerar Código Pix";
