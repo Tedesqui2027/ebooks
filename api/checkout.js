@@ -16,39 +16,41 @@ const catalogo = {
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Método não permitido' });
 
-    // Agora recebemos também o e-mail do cliente vindo do site
     const { produtoId, email } = req.body;
     const produtoSelecionado = catalogo[produtoId];
 
-    if (!produtoSelecionado || !email) return res.status(400).json({ error: 'Dados inválidos' });
-
-    const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
-    const payment = new Payment(client); // Usando a API Direta
+    if (!produtoSelecionado || !email) {
+        return res.status(400).json({ erroMercadoPago: 'Produto não encontrado no backend ou e-mail vazio.' });
+    }
 
     try {
+        const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
+        const payment = new Payment(client);
+
         const response = await payment.create({
             body: {
                 transaction_amount: produtoSelecionado.preco,
                 description: produtoSelecionado.titulo,
-                payment_method_id: 'pix', // FORÇA A GERAÇÃO APENAS DO PIX
+                payment_method_id: 'pix',
                 payer: {
                     email: email
-                },
-                external_reference: produtoId,
-                notification_url: "https://ebooks-omega.vercel.app/api/webhook"
+                }
             }
         });
 
-        // O Mercado Pago devolve um link de uma tela segura apenas com o QR Code e o Copia e Cola
         const linkPix = response.point_of_interaction?.transaction_data?.ticket_url;
 
         if (linkPix) {
             res.status(200).json({ url: linkPix });
         } else {
-            res.status(500).json({ error: 'Falha ao obter o link do Pix.' });
+            res.status(400).json({ erroMercadoPago: 'Pagamento gerado, mas MP não devolveu o link Pix.', detalhes: response });
         }
     } catch (error) {
-        console.error("Erro no checkout Pix:", error);
-        res.status(500).json({ error: 'Falha ao processar o pagamento' });
+        console.error("Erro capturado do Mercado Pago:", error);
+        // Devolvemos o erro exato para a tela do site
+        res.status(500).json({ 
+            erroMercadoPago: error.message || 'Erro de comunicação', 
+            detalhes: error.cause || error
+        });
     }
 }
