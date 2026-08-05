@@ -1,4 +1,4 @@
-import { MercadoPagoConfig, Payment } from 'mercadopago';
+const { MercadoPagoConfig, Payment } = require('mercadopago');
 
 const catalogo = {
     'ebook-1': { titulo: 'O Tesouro que Não Perece', preco: 29.90 },
@@ -13,7 +13,7 @@ const catalogo = {
     'combo-all': { titulo: 'Combo 9 E-books Cristãos', preco: 149.90 }
 };
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Método não permitido' });
 
     const { produtoId, email } = req.body;
@@ -27,7 +27,6 @@ export default async function handler(req, res) {
         const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
         const payment = new Payment(client);
 
-        // Define a validade do Pix para 30 minutos no futuro
         const dataExpiracao = new Date();
         dataExpiracao.setMinutes(dataExpiracao.getMinutes() + 30);
 
@@ -39,10 +38,10 @@ export default async function handler(req, res) {
                 payer: {
                     email: email
                 },
-                // NOVAS LINHAS ADICIONADAS AQUI:
                 date_of_expiration: dataExpiracao.toISOString(),
-                notification_url: 'https://ebooks-omega.vercel.app/api/webhook'
-                external_reference: produtoId // <-- ESSA É A LINHA NOVA            }
+                notification_url: 'https://ebooks-omega.vercel.app/api/webhook',
+                external_reference: produtoId
+            }
         });
 
         const linkPix = response.point_of_interaction?.transaction_data?.ticket_url;
