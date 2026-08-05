@@ -13,18 +13,24 @@ if (!admin.apps.length) {
     });
 }
 
+// Configuração ajustada para o Gmail e para as variáveis EMAIL_USER que criamos
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
+    host: 'smtp.gmail.com',
     port: 465,
     secure: true,
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+    auth: { 
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS 
+    }
 });
 
 export default async function handler(req, res) {
-    res.status(200).send('Webhook recebido');
-    if (req.method !== 'POST') return;
+    if (req.method !== 'POST') {
+        return res.status(405).send('Método não permitido');
+    }
     
     const { type, data } = req.body;
+    
     if (type === 'payment') {
         try {
             const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
@@ -32,8 +38,15 @@ export default async function handler(req, res) {
             const infoPagamento = await payment.get({ id: data.id });
 
             if (infoPagamento.status === 'approved') {
-                const produtoComprado = infoPagamento.external_reference;
+                const produtoComprado = infoPagamento.external_reference; 
                 const emailDoCliente = infoPagamento.payer.email;
+                
+                // Trava de segurança caso o pagamento venha sem referência
+                if (!produtoComprado) {
+                    console.error("ERRO: Pagamento aprovado, mas sem external_reference.");
+                    return res.status(400).send("Faltou a referência do produto");
+                }
+
                 const extensao = produtoComprado === 'combo-all' ? 'zip' : 'pdf';
                 const arquivo = admin.storage().bucket().file(`ebooks/${produtoComprado}.${extensao}`);
                 
@@ -43,7 +56,7 @@ export default async function handler(req, res) {
                 });
 
                 await transporter.sendMail({
-                    from: `"Biblioteca Cristã" <${process.env.SMTP_USER}>`,
+                    from: `"Biblioteca Cristã" <${process.env.EMAIL_USER}>`,
                     to: emailDoCliente,
                     subject: 'Seu material chegou! 🎉',
                     html: `
@@ -57,8 +70,16 @@ export default async function handler(req, res) {
                     `
                 });
             }
+            
+            // O SUCESSO VEM NO FINAL! Agora a Vercel espera o e-mail sair antes de fechar a conexão.
+            return res.status(200).send('Webhook processado e e-mail enviado com sucesso');
+            
         } catch (error) {
             console.error('Erro no webhook:', error);
+            return res.status(500).send('Erro interno ao processar webhook');
         }
     }
+    
+    // Resposta padrão caso o Mercado Pago envie outro tipo de notificação que não seja 'payment'
+    return res.status(200).send('Notificação recebida, mas não era de pagamento');
 }
