@@ -24,8 +24,8 @@ export default async function handler(req, res) {
     const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
     const preference = new Preference(client);
 
-    // DICA: Troque para o domínio real do seu site na Vercel
-    const urlSite = "https://seusite-na-vercel.app";
+    // SEU LINK OFICIAL ATUALIZADO
+    const urlSite = "https://ebooks-omega.vercel.app";
 
     try {
         const response = await preference.create({
@@ -39,11 +39,12 @@ export default async function handler(req, res) {
                         currency_id: 'BRL'
                     }
                 ],
-                // BLOQUEIA O BOLETO E DÁ PRIORIDADE AO PIX E CARTÃO
                 payment_methods: {
                     excluded_payment_types: [
-                        { id: "ticket" } 
-                    ]
+                        { id: "ticket" } // Bloqueia o boleto
+                    ],
+                    // FORÇA O PIX A SER A OPÇÃO PRINCIPAL
+                    default_payment_method_id: "pix"
                 },
                 external_reference: produtoId,
                 back_urls: {
