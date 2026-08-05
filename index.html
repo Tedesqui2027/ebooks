@@ -71,6 +71,22 @@
             text-align: center; 
             box-shadow: 0 8px 20px rgba(241, 196, 15, 0.15);
         }
+        
+        /* ESTILO PARA AS IMAGENS RESTAURADAS */
+        .card-img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .combo-card .card-img {
+            max-width: 400px;
+            margin: 0 auto 20px auto;
+            display: block;
+        }
+
         .card h2 { 
             font-size: 1.5em; 
             margin-bottom: 15px; 
@@ -160,20 +176,21 @@
     </div>
 
     <script>
-        // CATÁLOGO DE PRODUTOS
+        // CATÁLOGO DE PRODUTOS COM IMAGENS RESTAURADAS
+        // Altere o caminho "img/nome-da-imagem.jpg" para a pasta correta onde estão suas imagens (ex: "assets/ebook-1.jpg")
         const produtosAvulsos = [
-            { id: 'ebook-1', titulo: 'O Tesouro que Não Perece', desc: 'Descubra a verdadeira riqueza espiritual e valores eternos.', preco: 29.90 },
-            { id: 'ebook-2', titulo: 'Educação dos Filhos', desc: 'Princípios bíblicos práticos para a criação da sua família.', preco: 29.90 },
-            { id: 'ebook-3', titulo: 'Paz para a Mente Ansiosa', desc: 'Encontre descanso e conforto em Deus para os dias agitados.', preco: 29.90 },
-            { id: 'ebook-4', titulo: 'Finanças Segundo a Bíblia', desc: 'Sabedoria financeira à luz da Palavra para uma vida próspera.', preco: 29.90 },
-            { id: 'ebook-5', titulo: 'Libertos das Correntes', desc: 'Um guia prático para alcançar a verdadeira liberdade espiritual.', preco: 29.90 },
-            { id: 'ebook-6', titulo: 'Luz na Escuridão', desc: 'Esperança, fé e direção divina para superar tempos difíceis.', preco: 29.90 },
-            { id: 'ebook-7', titulo: 'Alimentados pela Palavra', desc: 'Devocional diário para nutrição e fortalecimento da sua fé.', preco: 29.90 },
-            { id: 'ebook-8', titulo: 'Casamento Segundo a Bíblia', desc: 'Princípios sagrados para construir uma união duradoura e forte.', preco: 29.90 },
-            { id: 'ebook-9', titulo: 'Libertados pelo Poder', desc: 'Experimente o agir transformador do Evangelho na sua vida.', preco: 29.90 }
+            { id: 'ebook-1', titulo: 'O Tesouro que Não Perece', desc: 'Descubra a verdadeira riqueza espiritual e valores eternos.', preco: 29.90, imagem: 'img/ebook-1.jpg' },
+            { id: 'ebook-2', titulo: 'Educação dos Filhos', desc: 'Princípios bíblicos práticos para a criação da sua família.', preco: 29.90, imagem: 'img/ebook-2.jpg' },
+            { id: 'ebook-3', titulo: 'Paz para a Mente Ansiosa', desc: 'Encontre descanso e conforto em Deus para os dias agitados.', preco: 29.90, imagem: 'img/ebook-3.jpg' },
+            { id: 'ebook-4', titulo: 'Finanças Segundo a Bíblia', desc: 'Sabedoria financeira à luz da Palavra para uma vida próspera.', preco: 29.90, imagem: 'img/ebook-4.jpg' },
+            { id: 'ebook-5', titulo: 'Libertos das Correntes', desc: 'Um guia prático para alcançar a verdadeira liberdade espiritual.', preco: 29.90, imagem: 'img/ebook-5.jpg' },
+            { id: 'ebook-6', titulo: 'Luz na Escuridão', desc: 'Esperança, fé e direção divina para superar tempos difíceis.', preco: 29.90, imagem: 'img/ebook-6.jpg' },
+            { id: 'ebook-7', titulo: 'Alimentados pela Palavra', desc: 'Devocional diário para nutrição e fortalecimento da sua fé.', preco: 29.90, imagem: 'img/ebook-7.jpg' },
+            { id: 'ebook-8', titulo: 'Casamento Segundo a Bíblia', desc: 'Princípios sagrados para construir uma união duradoura e forte.', preco: 29.90, imagem: 'img/ebook-8.jpg' },
+            { id: 'ebook-9', titulo: 'Libertados pelo Poder', desc: 'Experimente o agir transformador do Evangelho na sua vida.', preco: 29.90, imagem: 'img/ebook-9.jpg' }
         ];
 
-        const combo = { id: 'combo-all', titulo: 'Coleção Completa: Os 9 E-books', desc: 'Leve toda a nossa biblioteca de sabedoria cristã de uma só vez e garanta um super desconto exclusivo.', preco: 149.90, precoAntigo: 269.10, isCombo: true };
+        const combo = { id: 'combo-all', titulo: 'Coleção Completa: Os 9 E-books', desc: 'Leve toda a nossa biblioteca de sabedoria cristã de uma só vez e garanta um super desconto exclusivo.', preco: 149.90, precoAntigo: 269.10, imagem: 'img/combo.jpg', isCombo: true };
 
         // FUNÇÃO DE RENDERIZAÇÃO
         function renderizarProduto(prod, container) {
@@ -184,7 +201,9 @@
                 ? `<div class="price"><span class="old-price">R$ ${prod.precoAntigo.toFixed(2)}</span> R$ ${prod.preco.toFixed(2)}</div>`
                 : `<div class="price">R$ ${prod.preco.toFixed(2)}</div>`;
 
+            // Tag img adicionada aqui
             card.innerHTML = `
+                <img src="${prod.imagem}" alt="${prod.titulo}" class="card-img" onerror="this.style.display='none'">
                 <div>
                     <h2>${prod.titulo}</h2>
                     <p class="desc">${prod.desc}</p>
@@ -213,6 +232,7 @@
             document.getElementById('cliente-email').value = ''; 
         }
 
+        // SISTEMA ATUALIZADO PARA CAPTURAR O ERRO DO MERCADO PAGO
         async function confirmarCompra() {
             const email = document.getElementById('cliente-email').value;
             if (!email || !email.includes('@')) {
@@ -225,7 +245,6 @@
             btn.innerText = "Processando conexão segura...";
 
             try {
-                // Envia a requisição para a nossa API na Vercel (arquivo api/checkout.js)
                 const response = await fetch('/api/checkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -235,15 +254,15 @@
                 const data = await response.json();
                 
                 if (data.url) {
-                    // Redireciona para o link oficial do Mercado Pago com o Copia e Cola do Pix
                     window.location.href = data.url; 
                 } else {
-                    alert("Erro ao gerar o Pix. Verifique se o produto existe.");
+                    // MOSTRA O ERRO EXATO QUE VEIO DO BACKEND
+                    alert("MOTIVO DA RECUSA DO MERCADO PAGO:\n\n" + JSON.stringify(data, null, 2));
                     btn.disabled = false;
                     btn.innerText = "Gerar Código Pix";
                 }
             } catch (error) {
-                alert("Ocorreu um erro de rede. Tente novamente.");
+                alert("Ocorreu um erro de rede: " + error.message);
                 btn.disabled = false;
                 btn.innerText = "Gerar Código Pix";
             }
