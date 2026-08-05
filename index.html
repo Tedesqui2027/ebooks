@@ -183,11 +183,14 @@
             
             <p style="margin: 15px 0; font-size: 14px; color: #666;">Ou use o Pix Copia e Cola:</p>
             <input type="text" id="input-copiacola" readonly style="width:100%; padding:10px; font-size:12px; color:#555; background:#f9f9f9; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; text-align:center;">
-            <button onclick="copiarPix()" style="background:#3498db; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-bottom: 20px;">Copiar Código</button>
+            
+            <!-- Botão de copiar sem aquele alerta feio -->
+            <button id="btn-copiar-pix" onclick="copiarPix()" style="background:#3498db; color:white; border:none; padding:12px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-bottom: 20px; width: 100%; transition: 0.3s;">Copiar Código Pix</button>
             
             <div id="status-pagamento" style="background:#f1c40f22; color:#f39c12; padding:15px; border-radius:8px; font-weight:bold;">⏳ Aguardando pagamento...</div>
             
-            <button id="btn-fechar-pix" onclick="fecharPix()" style="background:transparent; color:#95a5a6; border:none; margin-top:20px; cursor:pointer; text-decoration:underline;">Fechar e cancelar</button>
+            <!-- Botão de fechar/voltar (Muda de visual quando o Pix é pago) -->
+            <button id="btn-fechar-pix" onclick="fecharPix()" style="background:transparent; color:#95a5a6; border:none; margin-top:20px; cursor:pointer; text-decoration:underline; width: 100%; display: block;">Fechar e cancelar</button>
         </div>
     </div>
 
@@ -217,7 +220,7 @@
                 : `<div class="price">R$ ${prod.preco.toFixed(2)}</div>`;
 
             card.innerHTML = `
-                <img src="${prod.imagem}" alt="${prod.titulo}" class="card-img" onerror="this.style.display='none'">
+                <img src="${prod.imagem}" alt="${prod.titulo}" class="card-img">
                 <div>
                     <h2>${prod.titulo}</h2>
                     <p class="desc">${prod.desc}</p>
@@ -233,7 +236,7 @@
         produtosAvulsos.forEach(prod => renderizarProduto(prod, 'produtos-container'));
         renderizarProduto(combo, 'combo-container');
 
-        // LÓGICA DO MODAL
+        // LÓGICA DOS MODAIS
         let produtoSelecionadoId = null;
         let verificadorIntervalo = null;
 
@@ -252,7 +255,6 @@
             document.getElementById('pix-modal').style.display = 'none';
             if (verificadorIntervalo) clearInterval(verificadorIntervalo);
             
-            // Restaura o botão da janela de e-mail caso a pessoa abra de novo
             const btn = document.getElementById('btn-confirmar');
             if (btn) {
                 btn.disabled = false;
@@ -260,11 +262,24 @@
             }
         }
 
+        // NOVO SISTEMA DE COPIAR SEM ALERT()
         function copiarPix() {
             const input = document.getElementById('input-copiacola');
             input.select();
             document.execCommand('copy');
-            alert('Código Pix copiado com sucesso!');
+            
+            const btn = document.getElementById('btn-copiar-pix');
+            const textoOriginal = "Copiar Código Pix";
+            
+            // Muda a aparência do botão instantaneamente
+            btn.innerText = "✅ Copiado!";
+            btn.style.background = "#27ae60";
+            
+            // Volta ao normal depois de 2 segundos
+            setTimeout(() => {
+                btn.innerText = textoOriginal;
+                btn.style.background = "#3498db";
+            }, 2000);
         }
 
         // COMUNICAÇÃO COM O BACKEND PARA GERAR O PIX
@@ -295,23 +310,28 @@
                 const data = await response.json();
                 
                 if (data.qrCodeBase64) {
-                    fecharModal(); // Fecha a tela de e-mail
+                    fecharModal(); 
                     
-                    // Preenche e mostra a tela do Pix
                     document.getElementById('img-qrcode').src = "data:image/jpeg;base64," + data.qrCodeBase64;
                     document.getElementById('input-copiacola').value = data.copiaECola;
                     
-                    // Reseta o visual do status caso a pessoa esteja fazendo uma segunda compra
+                    // Reseta o modal do Pix para o visual original (caso seja a segunda compra da pessoa)
                     const statusDiv = document.getElementById('status-pagamento');
                     statusDiv.innerHTML = "⏳ Aguardando pagamento...";
                     statusDiv.style.color = "#f39c12";
                     statusDiv.style.background = "#f1c40f22";
                     document.getElementById('pix-titulo').innerText = "Escaneie para Pagar";
-                    document.getElementById('btn-fechar-pix').innerText = "Fechar e cancelar";
+                    
+                    // Reseta o botão de voltar para o padrão
+                    const btnVoltar = document.getElementById('btn-fechar-pix');
+                    btnVoltar.innerText = "Fechar e cancelar";
+                    btnVoltar.style.background = "transparent";
+                    btnVoltar.style.color = "#95a5a6";
+                    btnVoltar.style.textDecoration = "underline";
+                    btnVoltar.style.padding = "0";
                     
                     document.getElementById('pix-modal').style.display = 'flex';
 
-                    // Inicia a verificação de pagamento a cada 5 segundos
                     verificadorIntervalo = setInterval(() => checarStatus(data.paymentId), 5000);
                 } else {
                     alert("Erro ao gerar Pix no Mercado Pago:\n" + JSON.stringify(data));
@@ -330,23 +350,31 @@
                 const data = await res.json();
                 
                 if (data.status === 'approved') {
-                    clearInterval(verificadorIntervalo); // Para de checar
+                    clearInterval(verificadorIntervalo); 
                     
-                    // Atualiza a tela de Pix com a mensagem de sucesso
                     const statusDiv = document.getElementById('status-pagamento');
-                    statusDiv.innerHTML = "✅ Pagamento Aprovado!<br><br><span style='font-size:13px; font-weight:normal; color:#333;'>Seu E-book foi enviado para o seu e-mail. Verifique a caixa de entrada (e o Spam).</span>";
+                    statusDiv.innerHTML = "✅ Pagamento Aprovado!<br><br><span style='font-size:14px; font-weight:bold; color:#155724;'>Seu E-book foi enviado! Verifique sua caixa de entrada e a pasta de Spam.</span>";
                     statusDiv.style.background = "#d4edda";
                     statusDiv.style.color = "#155724";
+                    statusDiv.style.padding = "20px";
                     
-                    document.getElementById('pix-titulo').innerText = "Sucesso!";
-                    document.getElementById('btn-fechar-pix').innerText = "Voltar para a loja";
+                    document.getElementById('pix-titulo').innerText = "🎉 Sucesso!";
+                    
+                    // TRANSFORMA O LINK DE FECHAR EM UM BOTÃO GIGANTE DE VOLTAR
+                    const btnVoltar = document.getElementById('btn-fechar-pix');
+                    btnVoltar.innerText = "⬅ VOLTAR PARA A LOJA";
+                    btnVoltar.style.background = "#27ae60";
+                    btnVoltar.style.color = "white";
+                    btnVoltar.style.padding = "16px";
+                    btnVoltar.style.borderRadius = "8px";
+                    btnVoltar.style.textDecoration = "none";
+                    btnVoltar.style.fontWeight = "bold";
                 }
             } catch (e) {
                 console.log("Checando status do pagamento em segundo plano...");
             }
         }
 
-        // DESTRAVA O BOTÃO SE O USUÁRIO CLICAR EM "VOLTAR" NO NAVEGADOR (P/ CELULARES)
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
                 const btn = document.getElementById('btn-confirmar');
