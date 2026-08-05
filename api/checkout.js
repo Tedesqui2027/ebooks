@@ -1,4 +1,4 @@
-import { MercadoPagoConfig, Preference } from 'mercadopago';
+import { MercadoPagoConfig, Payment } from 'mercadopago';
 
 const catalogo = {
     'ebook-1': { titulo: 'O Tesouro que Não Perece', preco: 29.90 },
@@ -16,47 +16,39 @@ const catalogo = {
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Método não permitido' });
 
-    const { produtoId } = req.body;
+    // Agora recebemos também o e-mail do cliente vindo do site
+    const { produtoId, email } = req.body;
     const produtoSelecionado = catalogo[produtoId];
 
-    if (!produtoSelecionado) return res.status(400).json({ error: 'Produto inválido' });
+    if (!produtoSelecionado || !email) return res.status(400).json({ error: 'Dados inválidos' });
 
     const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
-    const preference = new Preference(client);
-
-    const urlSite = "https://ebooks-omega.vercel.app";
+    const payment = new Payment(client); // Usando a API Direta
 
     try {
-        const response = await preference.create({
+        const response = await payment.create({
             body: {
-                items: [
-                    {
-                        id: produtoId,
-                        title: produtoSelecionado.titulo,
-                        quantity: 1,
-                        unit_price: produtoSelecionado.preco,
-                        currency_id: 'BRL'
-                    }
-                ],
-                payment_methods: {
-                    excluded_payment_types: [
-                        { id: "ticket" } // Bloqueia o boleto e deixa Pix/Cartão em destaque
-                    ]
+                transaction_amount: produtoSelecionado.preco,
+                description: produtoSelecionado.titulo,
+                payment_method_id: 'pix', // FORÇA A GERAÇÃO APENAS DO PIX
+                payer: {
+                    email: email
                 },
                 external_reference: produtoId,
-                back_urls: {
-                    success: `${urlSite}/sucesso.html`,
-                    failure: `${urlSite}/index.html`,
-                    pending: `${urlSite}/sucesso.html`
-                },
-                auto_return: "approved",
-                notification_url: `${urlSite}/api/webhook`
+                notification_url: "https://ebooks-omega.vercel.app/api/webhook"
             }
         });
 
-        res.status(200).json({ url: response.init_point });
+        // O Mercado Pago devolve um link de uma tela segura apenas com o QR Code e o Copia e Cola
+        const linkPix = response.point_of_interaction?.transaction_data?.ticket_url;
+
+        if (linkPix) {
+            res.status(200).json({ url: linkPix });
+        } else {
+            res.status(500).json({ error: 'Falha ao obter o link do Pix.' });
+        }
     } catch (error) {
-        console.error("Erro no checkout:", error);
-        res.status(500).json({ error: 'Falha ao criar o pagamento' });
+        console.error("Erro no checkout Pix:", error);
+        res.status(500).json({ error: 'Falha ao processar o pagamento' });
     }
 }
