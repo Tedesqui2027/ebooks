@@ -36,6 +36,8 @@ module.exports = async function handler(req, res) {
             const payment = new Payment(client);
             const infoPagamento = await payment.get({ id: data.id });
 
+            console.log("Status do pagamento recebido no webhook:", infoPagamento.status);
+
             if (infoPagamento.status === 'approved') {
                 const produtoComprado = infoPagamento.external_reference; 
                 const emailDoCliente = infoPagamento.payer.email;
@@ -46,14 +48,14 @@ module.exports = async function handler(req, res) {
                 }
 
                 const extensao = produtoComprado === 'combo-all' ? 'zip' : 'pdf';
-                
-                // CORRIGIDO: Removido o prefixo 'ebooks/' para buscar o arquivo direto na raiz do Storage
                 const arquivo = admin.storage().bucket().file(`${produtoComprado}.${extensao}`);
                 
                 const [urlDownload] = await arquivo.getSignedUrl({
                     action: 'read',
                     expires: Date.now() + 24 * 60 * 60 * 1000, 
                 });
+
+                console.log("Tentando enviar e-mail para:", emailDoCliente);
 
                 await transporter.sendMail({
                     from: `"Biblioteca Cristã" <${process.env.EMAIL_USER}>`,
@@ -69,12 +71,14 @@ module.exports = async function handler(req, res) {
                         </div>
                     `
                 });
+
+                console.log("E-mail enviado com sucesso!");
             }
             
-            return res.status(200).send('Webhook processado e e-mail enviado com sucesso');
+            return res.status(200).send('Webhook processado com sucesso');
             
         } catch (error) {
-            console.error('Erro no webhook:', error);
+            console.error('ERRO CRÍTICO NO WEBHOOK:', error);
             return res.status(500).send('Erro interno ao processar webhook');
         }
     }
