@@ -24,7 +24,7 @@ export default async function handler(req, res) {
         const dadosDownload = snapshot.val();
         
         if (dadosDownload && dadosDownload.tentativas >= 3) {
-            return res.status(403).json({ error: 'Limite de downloads atingido para esta compra.' });
+            return res.status(403).json({ error: 'Limite de downloads atingido.' });
         }
 
         const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
@@ -33,13 +33,8 @@ export default async function handler(req, res) {
 
         if (infoPagamento.status === 'approved') {
             const produtoComprado = infoPagamento.external_reference;
-            
-            // Se for o combo, busca um arquivo ZIP. Se for avulso, busca o PDF.
             const extensao = produtoComprado === 'combo-all' ? 'zip' : 'pdf';
-            const nomeArquivo = `${produtoComprado}.${extensao}`;
-
-            const bucket = admin.storage().bucket();
-            const arquivo = bucket.file(`ebooks/${nomeArquivo}`);
+            const arquivo = admin.storage().bucket().file(`ebooks/${produtoComprado}.${extensao}`);
 
             const [urlTemporaria] = await arquivo.getSignedUrl({
                 action: 'read',
@@ -58,6 +53,6 @@ export default async function handler(req, res) {
         return res.status(200).json({ status: infoPagamento.status, message: 'Processando...' });
     } catch (error) {
         console.error("Erro interno:", error);
-        res.status(500).json({ error: 'Erro ao processar a liberação do arquivo.' });
+        res.status(500).json({ error: 'Erro ao processar arquivo.' });
     }
 }
