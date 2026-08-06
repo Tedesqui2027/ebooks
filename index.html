@@ -85,7 +85,12 @@
             
             <input type="email" id="cliente-email" placeholder="Digite seu melhor e-mail" style="width:100%; padding:14px; margin-bottom:12px; border:1px solid #ccc; border-radius:8px; font-size:16px; outline:none; transition: border-color 0.3s;">
             
-            <input type="email" id="cliente-email-confirma" placeholder="Confirme o e-mail digitado acima" style="width:100%; padding:14px; margin-bottom:25px; border:1px solid #ccc; border-radius:8px; font-size:16px; outline:none; transition: border-color 0.3s;">
+            <input type="email" id="cliente-email-confirma" placeholder="Confirme o e-mail digitado acima" style="width:100%; padding:14px; margin-bottom:15px; border:1px solid #ccc; border-radius:8px; font-size:16px; outline:none; transition: border-color 0.3s;">
+            
+            <!-- CAIXA DE ERRO BONITA (Escondida por padrão) -->
+            <div id="msg-erro-email" style="display:none; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; text-align: left;">
+                <!-- O texto de erro entra aqui via JavaScript -->
+            </div>
             
             <button id="btn-confirmar" onclick="confirmarCompra()" style="background:#27ae60; color:white; border:none; padding:16px; border-radius:8px; cursor:pointer; width:100%; font-size:16px; font-weight:bold; transition:0.3s;">Gerar Código Pix</button>
             <button onclick="fecharModal()" style="background:transparent; color:#95a5a6; border:none; margin-top:20px; cursor:pointer; font-size:15px; text-decoration:underline;">Cancelar compra</button>
@@ -104,6 +109,9 @@
             
             <button id="btn-copiar-pix" onclick="copiarPix()" style="background:#3498db; color:white; border:none; padding:12px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-bottom: 20px; width: 100%; transition: 0.3s;">Copiar Código Pix</button>
             
+            <!-- CAIXA DE ERRO DO PIX BONITA (Escondida por padrão) -->
+            <div id="msg-erro-pix" style="display:none; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;"></div>
+
             <div id="status-pagamento" style="background:#f1c40f22; color:#f39c12; padding:15px; border-radius:8px; font-weight:bold;">⏳ Aguardando pagamento...</div>
             
             <button id="btn-fechar-pix" onclick="fecharPix()" style="background:transparent; color:#95a5a6; border:none; margin-top:20px; cursor:pointer; text-decoration:underline; width: 100%; display: block;">Fechar e cancelar</button>
@@ -112,18 +120,18 @@
 
     <script>
         const produtosAvulsos = [
-            { id: 'ebook-1', titulo: 'O Tesouro que Não Perece', desc: 'Descubra a verdadeira riqueza espiritual e valores eternos.', preco: 1.99 },
-            { id: 'ebook-2', titulo: 'Educação dos Filhos', desc: 'Princípios bíblicos práticos para a criação da sua família.', preco: 1.99 },
-            { id: 'ebook-3', titulo: 'Paz para a Mente Ansiosa', desc: 'Encontre descanso e conforto em Deus para os dias agitados.', preco: 1.99 },
-            { id: 'ebook-4', titulo: 'Finanças Segundo a Bíblia', desc: 'Sabedoria financeira à luz da Palavra para uma vida próspera.', preco: 1.99 },
-            { id: 'ebook-5', titulo: 'Libertos das Correntes', desc: 'Um guia prático para alcançar a verdadeira liberdade espiritual.', preco: 1.99 },
-            { id: 'ebook-6', titulo: 'Luz na Escuridão', desc: 'Esperança, fé e direção divina para superar tempos difíceis.', preco: 1.99 },
-            { id: 'ebook-7', titulo: 'Alimentados pela Palavra', desc: 'Devocional diário para nutrição e fortalecimento da sua fé.', preco: 1.99 },
-            { id: 'ebook-8', titulo: 'Casamento Segundo a Bíblia', desc: 'Princípios sagrados para construir uma união duradoura e forte.', preco: 1.99 },
-            { id: 'ebook-9', titulo: 'Libertados pelo Poder', desc: 'Experimente o agir transformador do Evangelho na sua vida.', preco: 1.99 }
+            { id: 'ebook-1', titulo: 'O Tesouro que Não Perece', desc: 'Descubra a verdadeira riqueza espiritual e valores eternos.', preco: 29.90 },
+            { id: 'ebook-2', titulo: 'Educação dos Filhos', desc: 'Princípios bíblicos práticos para a criação da sua família.', preco: 29.90 },
+            { id: 'ebook-3', titulo: 'Paz para a Mente Ansiosa', desc: 'Encontre descanso e conforto em Deus para os dias agitados.', preco: 29.90 },
+            { id: 'ebook-4', titulo: 'Finanças Segundo a Bíblia', desc: 'Sabedoria financeira à luz da Palavra para uma vida próspera.', preco: 29.90 },
+            { id: 'ebook-5', titulo: 'Libertos das Correntes', desc: 'Um guia prático para alcançar a verdadeira liberdade espiritual.', preco: 29.90 },
+            { id: 'ebook-6', titulo: 'Luz na Escuridão', desc: 'Esperança, fé e direção divina para superar tempos difíceis.', preco: 29.90 },
+            { id: 'ebook-7', titulo: 'Alimentados pela Palavra', desc: 'Devocional diário para nutrição e fortalecimento da sua fé.', preco: 29.90 },
+            { id: 'ebook-8', titulo: 'Casamento Segundo a Bíblia', desc: 'Princípios sagrados para construir uma união duradoura e forte.', preco: 29.90 },
+            { id: 'ebook-9', titulo: 'Libertados pelo Poder', desc: 'Experimente o agir transformador do Evangelho na sua vida.', preco: 29.90 }
         ];
 
-        const combo = { id: 'combo-all', titulo: 'Coleção Completa: Os 9 E-books', desc: 'Leve toda a nossa biblioteca de sabedoria cristã de uma só vez e garanta um super desconto exclusivo.', preco: 9.90, precoAntigo: 17.90, isCombo: true };
+        const combo = { id: 'combo-all', titulo: 'Coleção Completa: Os 9 E-books', desc: 'Leve toda a nossa biblioteca de sabedoria cristã de uma só vez e garanta um super desconto exclusivo.', preco: 149.90, precoAntigo: 269.10, isCombo: true };
 
         function renderizarProduto(prod, container) {
             const card = document.createElement('div');
@@ -162,6 +170,7 @@
             document.getElementById('email-modal').style.display = 'none';
             document.getElementById('cliente-email').value = ''; 
             document.getElementById('cliente-email-confirma').value = ''; 
+            document.getElementById('msg-erro-email').style.display = 'none'; // Reseta o erro
         }
 
         function fecharPix() {
@@ -173,6 +182,7 @@
                 btn.disabled = false;
                 btn.innerText = "Gerar Código Pix";
             }
+            document.getElementById('msg-erro-pix').style.display = 'none'; // Reseta o erro
         }
 
         function copiarPix() {
@@ -192,16 +202,31 @@
             }, 2000);
         }
 
+        function mostrarErroEmail(mensagem) {
+            const caixaErro = document.getElementById('msg-erro-email');
+            caixaErro.innerText = mensagem;
+            caixaErro.style.display = 'block';
+        }
+
+        function esconderErroEmail() {
+            document.getElementById('msg-erro-email').style.display = 'none';
+        }
+
+        // Limpa o erro assim que o usuário volta a digitar
+        document.getElementById('cliente-email').addEventListener('input', esconderErroEmail);
+        document.getElementById('cliente-email-confirma').addEventListener('input', esconderErroEmail);
+
         async function confirmarCompra() {
+            esconderErroEmail();
             const email = document.getElementById('cliente-email').value;
             const confirma = document.getElementById('cliente-email-confirma').value;
             
             if (!email || !email.includes('@')) {
-                alert("Por favor, digite um e-mail válido.");
+                mostrarErroEmail("⚠ Por favor, digite um endereço de e-mail válido.");
                 return;
             }
             if (email !== confirma) {
-                alert("Os e-mails digitados não são iguais. Por favor, corrija para não perder seu e-book.");
+                mostrarErroEmail("⚠ Os e-mails não batem. Por favor, digite os dois iguais para não perder seu e-book.");
                 return;
             }
 
@@ -241,12 +266,16 @@
 
                     verificadorIntervalo = setInterval(() => checarStatus(data.paymentId), 5000);
                 } else {
-                    alert("Erro ao iniciar o pagamento. Tente novamente.");
-                    fecharPix();
+                    const erroPix = document.getElementById('msg-erro-pix');
+                    erroPix.innerText = "⚠ Erro ao gerar o pagamento no servidor. Tente novamente.";
+                    erroPix.style.display = 'block';
+                    btn.disabled = false;
+                    btn.innerText = "Gerar Código Pix";
                 }
             } catch (error) {
-                alert("Ocorreu um erro de conexão.");
-                fecharPix();
+                mostrarErroEmail("⚠ Ocorreu um erro de conexão com a loja. Verifique sua internet e tente novamente.");
+                btn.disabled = false;
+                btn.innerText = "Gerar Código Pix";
             }
         }
 
