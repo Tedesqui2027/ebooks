@@ -45,12 +45,13 @@ module.exports = async function handler(req, res) {
                     return res.status(400).send("Dados incompletos");
                 }
 
-                const extensao = produtoComprado === 'combo-all' ? 'zip' : 'pdf';
+                // MUDANÇA AQUI: Removemos a condicional do PDF. 
+                // Agora TODOS os arquivos obrigatoriamente precisam ser .zip no Firebase
+                const extensao = 'zip';
                 
                 const bucket = admin.storage().bucket('loja-ebooks-cristaos-8f1b6.firebasestorage.app');
                 const arquivo = bucket.file(`${produtoComprado}.${extensao}`);
                 
-                // ADICIONADO: Força o navegador a baixar o arquivo com o nome original
                 const [urlDownload] = await arquivo.getSignedUrl({
                     action: 'read',
                     expires: Date.now() + 24 * 60 * 60 * 1000, 
@@ -68,11 +69,14 @@ module.exports = async function handler(req, res) {
                             <a href="${urlDownload}" style="background-color: #27ae60; color: white; padding: 15px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">
                                 Baixar Meu E-book Agora
                             </a>
+                            <p style="margin-top: 20px; font-size: 13px; color: #666;">
+                                <em>Nota: O arquivo está compactado (.zip) para garantir que o download seja feito com sucesso no seu celular. Após baixar, basta tocar nele para extrair o seu PDF.</em>
+                            </p>
                         </div>
                     `
                 });
 
-                console.log("E-mail com link de download direto enviado com sucesso!");
+                console.log("E-mail com link de download direto (ZIP) enviado com sucesso!");
             }
             
             return res.status(200).send('Webhook processado com sucesso');
