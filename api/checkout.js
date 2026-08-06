@@ -1,16 +1,16 @@
 const { MercadoPagoConfig, Payment } = require('mercadopago');
 
 const catalogo = {
-    'ebook-1': { titulo: 'O Tesouro que Não Perece', preco: 29.90 },
-    'ebook-2': { titulo: 'Educação dos Filhos', preco: 29.90 },
-    'ebook-3': { titulo: 'Paz para a Mente Ansiosa', preco: 29.90 },
-    'ebook-4': { titulo: 'Finanças Segundo a Bíblia', preco: 29.90 },
-    'ebook-5': { titulo: 'Libertos das Correntes', preco: 29.90 },
-    'ebook-6': { titulo: 'Luz na Escuridão', preco: 1.90 },
-    'ebook-7': { titulo: 'Alimentados pela Palavra de Deus', preco: 1.90 },
-    'ebook-8': { titulo: 'Casamento Segundo a Bíblia', preco: 1.90 },
-    'ebook-9': { titulo: 'Libertados pelo Poder de Deus', preco: 1.90 },
-    'combo-all': { titulo: 'Combo 9 E-books Cristãos', preco: 149.90 }
+    'ebook-1': { titulo: 'O Tesouro que Não Perece', preco: 1.99 },
+    'ebook-2': { titulo: 'Educação dos Filhos', preco: 1.99 },
+    'ebook-3': { titulo: 'Paz para a Mente Ansiosa', preco: 1.99 },
+    'ebook-4': { titulo: 'Finanças Segundo a Bíblia', preco: 1.99 },
+    'ebook-5': { titulo: 'Libertos das Correntes', preco: 1.99 },
+    'ebook-6': { titulo: 'Luz na Escuridão', preco: 1.99 },
+    'ebook-7': { titulo: 'Alimentados pela Palavra de Deus', preco: 1.99 },
+    'ebook-8': { titulo: 'Casamento Segundo a Bíblia', preco: 1.99 },
+    'ebook-9': { titulo: 'Libertados pelo Poder de Deus', preco: 1.99 },
+    'combo-all': { titulo: 'Combo 9 E-books Cristãos', preco: 5.99 }
 };
 
 module.exports = async function handler(req, res) {
