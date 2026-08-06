@@ -37,8 +37,8 @@
         .old-price { text-decoration: line-through; color: #95a5a6; font-size: 16px; margin-right: 10px; }
         
         /* Botões */
-        .btn { background-color: #2c3e50; color: white; border: none; padding: 15px; font-size: 16px; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; font-weight: bold; }
-        .btn:hover { background-color: #1a252f; }
+        .btn { background-color: #3498db; color: white; border: none; padding: 15px; font-size: 16px; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; font-weight: bold; }
+        .btn:hover { background-color: #2980b9; }
         .btn-combo { background-color: #27ae60; font-size: 18px; max-width: 400px; margin: 0 auto; }
         .btn-combo:hover { background-color: #219150; }
         .btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
@@ -94,12 +94,10 @@
             <p style="margin: 15px 0; font-size: 14px; color: #666;">Ou use o Pix Copia e Cola:</p>
             <input type="text" id="input-copiacola" readonly style="width:100%; padding:10px; font-size:12px; color:#555; background:#f9f9f9; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; text-align:center;">
             
-            <!-- Botão de copiar sem o alert() -->
             <button id="btn-copiar-pix" onclick="copiarPix()" style="background:#3498db; color:white; border:none; padding:12px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-bottom: 20px; width: 100%; transition: 0.3s;">Copiar Código Pix</button>
             
             <div id="status-pagamento" style="background:#f1c40f22; color:#f39c12; padding:15px; border-radius:8px; font-weight:bold;">⏳ Aguardando pagamento...</div>
             
-            <!-- Botão de fechar/voltar (Muda de visual quando o Pix é pago) -->
             <button id="btn-fechar-pix" onclick="fecharPix()" style="background:transparent; color:#95a5a6; border:none; margin-top:20px; cursor:pointer; text-decoration:underline; width: 100%; display: block;">Fechar e cancelar</button>
         </div>
     </div>
@@ -127,7 +125,6 @@
                 ? `<div class="price"><span class="old-price">R$ ${prod.precoAntigo.toFixed(2)}</span> R$ ${prod.preco.toFixed(2)}</div>`
                 : `<div class="price">R$ ${prod.preco.toFixed(2)}</div>`;
 
-            // Mantive EXATAMENTE o seu HTML original aqui para os títulos não bugarem
             card.innerHTML = `
                 <div>
                     <h2>${prod.titulo}</h2>
@@ -170,7 +167,6 @@
             }
         }
 
-        // Função de copiar sem alert
         function copiarPix() {
             const input = document.getElementById('input-copiacola');
             input.select();
