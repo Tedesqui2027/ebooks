@@ -42,7 +42,27 @@
         /* Destaque para o Livro Gratuito */
         .free-card { background: #ebf5fb; border: 2px solid #3498db; align-items: center; text-align: center; }
         .free-card:hover { border-top: 2px solid #3498db; }
-        .free-label { display: inline-block; background-color: #3498db; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
+        
+        /* ANIMAÇÃO E ESTILO DO AVISO 100% GRATUITO */
+        @keyframes pulse-free {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(52, 152, 219, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
+        }
+
+        .free-label { 
+            display: inline-block; 
+            background-color: #3498db; 
+            color: white; 
+            padding: 10px 25px; /* Mais preenchimento */
+            border-radius: 30px; 
+            font-size: 22px; /* Fonte maior */
+            font-weight: 900; /* Mais grosso */
+            margin-bottom: 20px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            animation: pulse-free 2s infinite; /* Efeito de pulso chamativo */
+        }
 
         h2 { font-size: 20px; color: #2c3e50; margin-bottom: 10px; }
         p.desc { color: #666; font-size: 15px; line-height: 1.5; }
@@ -56,7 +76,7 @@
         .btn-combo:hover { background-color: #219150; }
         .btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
 
-        /* Botão da Música (+10% maior) */
+        /* Botão da Música */
         #btn-music {
             position: fixed;
             bottom: 30px;
@@ -65,10 +85,10 @@
             background-color: #27ae60; 
             color: white;
             border: none;
-            padding: 14px 22px; /* Aumentado 10% */
+            padding: 14px 22px; 
             border-radius: 50px;
             cursor: pointer;
-            font-size: 18px; /* Aumentado 10% */
+            font-size: 18px; 
             font-weight: bold;
             box-shadow: 0 6px 15px rgba(0,0,0,0.3);
             z-index: 998;
@@ -189,7 +209,7 @@
         <div id="gratis-container" class="grid" style="margin-bottom: 50px;">
             <div class="card free-card">
                 <div>
-                    <span class="free-label">100% Gratuito</span>
+                    <span class="free-label">100% GRATUITO</span>
                     <h2 style="font-size: 24px;">Transformando Minha Vida em Cristo em 30 Dias</h2>
                     <p class="desc" style="margin-top: 15px;">Um guia devocional poderoso de 30 dias para renovar sua mente, fortalecer sua fé e aproximar seu coração do propósito de Deus. Baixe agora sem custo algum!</p>
                 </div>
