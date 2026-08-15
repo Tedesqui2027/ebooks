@@ -54,14 +54,14 @@
             display: inline-block; 
             background-color: #3498db; 
             color: white; 
-            padding: 10px 25px; /* Mais preenchimento */
+            padding: 10px 25px; 
             border-radius: 30px; 
-            font-size: 22px; /* Fonte maior */
-            font-weight: 900; /* Mais grosso */
+            font-size: 22px; 
+            font-weight: 900; 
             margin-bottom: 20px; 
             text-transform: uppercase; 
             letter-spacing: 1px;
-            animation: pulse-free 2s infinite; /* Efeito de pulso chamativo */
+            animation: pulse-free 2s infinite; 
         }
 
         h2 { font-size: 20px; color: #2c3e50; margin-bottom: 10px; }
@@ -209,13 +209,13 @@
         <div id="gratis-container" class="grid" style="margin-bottom: 50px;">
             <div class="card free-card">
                 <div>
-                    <span class="free-label">100% GRÁTIS</span>
+                    <span class="free-label">100% GRATUITO</span>
                     <h2 style="font-size: 24px;">Transformando Minha Vida em Cristo em 30 Dias</h2>
                     <p class="desc" style="margin-top: 15px;">Um guia devocional poderoso de 30 dias para renovar sua mente, fortalecer sua fé e aproximar seu coração do propósito de Deus. Baixe agora sem custo algum!</p>
                 </div>
                 <div class="price" style="color: #3498db; margin-top: 15px;">R$ 0,00</div>
                 <button class="btn" onclick="baixarGratis()" style="max-width: 400px; margin: 0 auto;">
-                    Baixar E-book Grátis
+                    Baixar E-book Gratuito
                 </button>
             </div>
         </div>
@@ -289,14 +289,34 @@
     </div>
 
     <script>
-        // --- CONTROLE DE MÚSICA ---
+        // --- CONTROLE DE MÚSICA COM DETECÇÃO DE SEGUNDO PLANO ---
         const audio = document.getElementById("bg-music");
         const btnMusic = document.getElementById("btn-music");
+        let tocandoAntesDeOcultar = false;
 
         function tocarMusica() {
             audio.play().catch(e => console.log("Erro ao reproduzir áudio:", e));
             btnMusic.style.display = "none"; // Faz o botão sumir permanentemente
         }
+
+        // Lógica para pausar a música se a aba for para segundo plano
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                // Usuário saiu da aba/minimizou
+                if (!audio.paused) {
+                    audio.pause();
+                    tocandoAntesDeOcultar = true; // Lembra que a música estava tocando
+                } else {
+                    tocandoAntesDeOcultar = false;
+                }
+            } else {
+                // Usuário voltou para a aba
+                if (tocandoAntesDeOcultar && btnMusic.style.display === "none") {
+                    // Só volta a tocar se o botão já sumiu (sinal que o usuário tinha ativado antes)
+                    audio.play().catch(e => console.log("Erro ao retomar áudio:", e));
+                }
+            }
+        });
 
         // --- FUNÇÃO DO E-BOOK GRATUITO ---
         function baixarGratis() {
