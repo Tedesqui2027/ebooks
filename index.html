@@ -39,6 +39,11 @@
         .combo-card { background: #f0fbf6; border: 2px solid #27ae60; grid-column: 1 / -1; align-items: center; text-align: center; }
         .combo-card:hover { border-top: 2px solid #27ae60; }
         
+        /* Destaque para o Livro Gratuito */
+        .free-card { background: #ebf5fb; border: 2px solid #3498db; align-items: center; text-align: center; }
+        .free-card:hover { border-top: 2px solid #3498db; }
+        .free-label { display: inline-block; background-color: #3498db; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
+
         h2 { font-size: 20px; color: #2c3e50; margin-bottom: 10px; }
         p.desc { color: #666; font-size: 15px; line-height: 1.5; }
         .price { font-size: 24px; font-weight: bold; color: #27ae60; margin: 20px 0; }
@@ -50,6 +55,27 @@
         .btn-combo { background-color: #27ae60; font-size: 18px; max-width: 400px; margin: 0 auto; }
         .btn-combo:hover { background-color: #219150; }
         .btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+
+        /* Botão da Música */
+        #btn-music {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 998;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #btn-music:hover { background-color: #1a252f; transform: scale(1.05); }
 
         /* SEÇÃO DE DOAÇÃO */
         .donation-section {
@@ -119,7 +145,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 18px; /* <-- ADICIONE ESTA LINHA AQUI */
+            font-size: 18px;
             width: 100%;
             transition: background-color 0.3s;
             animation: heartbeat 2s infinite;
@@ -135,12 +161,39 @@
 </head>
 <body>
 
+    <!-- ÁUDIO DE FUNDO -->
+    <!-- Coloque o arquivo musica-fundo.mp3 na mesma pasta que este arquivo index.html -->
+    <audio id="bg-music" loop autoplay>
+        <source src="musica-fundo.mp3" type="audio/mpeg">
+        Seu navegador não suporta o elemento de áudio.
+    </audio>
+
+    <!-- BOTÃO FLUTUANTE DA MÚSICA -->
+    <button id="btn-music" onclick="toggleMusic()">🔊 Música ON</button>
+
     <header class="hero">
         <h1>Alimento para a Alma</h1>
         <p>Encontre direção, paz e sabedoria através da nossa coleção de obras inspiradas na Palavra. Transforme sua jornada diária com leituras que edificam.</p>
     </header>
 
     <div class="container">
+        
+        <!-- SEÇÃO DO E-BOOK GRATUITO -->
+        <h2 class="section-title">Presente Especial</h2>
+        <div id="gratis-container" class="grid" style="margin-bottom: 50px;">
+            <div class="card free-card">
+                <div>
+                    <span class="free-label">100% Gratuito</span>
+                    <h2 style="font-size: 24px;">Transformando Minha Vida em Cristo em 30 Dias</h2>
+                    <p class="desc" style="margin-top: 15px;">Um guia devocional poderoso de 30 dias para renovar sua mente, fortalecer sua fé e aproximar seu coração do propósito de Deus. Baixe agora sem custo algum!</p>
+                </div>
+                <div class="price" style="color: #3498db; margin-top: 15px;">R$ 0,00</div>
+                <button class="btn" onclick="baixarGratis()" style="max-width: 400px; margin: 0 auto;">
+                    Baixar E-book Gratuito
+                </button>
+            </div>
+        </div>
+
         <h2 class="section-title">Nossa Biblioteca</h2>
         
         <div id="produtos-container" class="grid"></div>
@@ -150,7 +203,7 @@
         <h2 class="section-title" style="margin-top: 20px;">Oferta Especial</h2>
         <div id="combo-container" class="grid"></div>
         
-        <!-- NOVA SEÇÃO DE DOAÇÃO -->
+        <!-- SEÇÃO DE DOAÇÃO -->
         <div class="donation-section">
             <h2>Semeie neste Ministério</h2>
             <p class="motivation">Estes materiais têm abençoado a vida de milhares de cristãos no Brasil, considere fazer uma doação voluntária. Seu apoio nos ajuda a continuar espalhando a mensagem do Evangelho e produzindo conteúdos que transformam vidas. <strong>Você pode escolher o valor que Deus tocar em seu coração.</strong></p>
@@ -159,10 +212,8 @@
             <div class="pix-box">
                 <h4>Escaneie ou copie o código Pix</h4>
                 
-                <!-- COLOQUE O LINK DA IMAGEM DO SEU QR CODE PIX NO LUGAR DE 'img/seu-qrcode-doacao.png' -->
                 <img src="img/seu-qrcode-doacao.png" alt="QR Code Doação Pix" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/200px-QR_code_for_mobile_English_Wikipedia.svg.png'"> 
                 
-                <!-- COLOQUE O SEU CÓDIGO PIX COPIA E COLA (OU SUA CHAVE PIX) NO ATRIBUTO 'value' ABAIXO -->
                 <input type="text" id="input-doacao" value="00020101021126810014BR.GOV.BCB.PIX2559pix-qr.mercadopago.com/instore/ol/v2/3Z932b5c5KafC9WB5ddoYN5204000053039865802BR592563.873.866 JEAN KLEBER TE6009SAO PAULO62080504mpis6304E853" readonly style="width:100%; padding:10px; font-size:13px; color:#555; background:#f9f9f9; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; text-align:center;">
                 
                 <button id="btn-copiar-doacao" class="btn-doacao" onclick="copiarPixDoacao()">Copiar Código de Doação</button>
@@ -212,6 +263,35 @@
     </div>
 
     <script>
+        // --- CONTROLE DE MÚSICA ---
+        const audio = document.getElementById("bg-music");
+        const btnMusic = document.getElementById("btn-music");
+
+        // Tenta tocar a música no primeiro clique do usuário na tela (Bypass de bloqueio do navegador)
+        document.body.addEventListener('click', function() {
+            if (audio.paused && btnMusic.innerText.includes("ON")) {
+                audio.play().catch(e => console.log("Áudio bloqueado aguardando interação."));
+            }
+        }, { once: true });
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                btnMusic.innerText = "🔊 Música ON";
+            } else {
+                audio.pause();
+                btnMusic.innerText = "🔇 Música OFF";
+            }
+        }
+
+        // --- FUNÇÃO DO E-BOOK GRATUITO ---
+        function baixarGratis() {
+            // Este link abaixo pode ser direto para um PDF na Vercel ou Firebase
+            // Coloque o nome do arquivo que você enviará para a sua hospedagem
+            const urlDoArquivo = "transformando-minha-vida.zip";
+            window.open(urlDoArquivo, '_blank');
+        }
+
         const produtosAvulsos = [
             { id: 'ebook-1', titulo: 'O Tesouro que Não Perece', desc: 'Descubra a verdadeira riqueza espiritual e valores eternos.', preco: 29.90 },
             { id: 'ebook-2', titulo: 'Educação dos Filhos', desc: 'Princípios bíblicos práticos para a criação da sua família.', preco: 29.90 },
@@ -260,13 +340,13 @@
             const textoOriginal = "Copiar Código de Doação";
             
             btn.innerText = "✅ Código Copiado!";
-            btn.style.animation = "none"; // Pausa a animação temporariamente
-            btn.style.backgroundColor = "#219150"; // Fica verde mais escuro enquanto copiado
+            btn.style.animation = "none";
+            btn.style.backgroundColor = "#219150";
             
             setTimeout(() => {
                 btn.innerText = textoOriginal;
-                btn.style.animation = ""; // Restaura a animação do coração
-                btn.style.backgroundColor = ""; // Restaura a cor principal
+                btn.style.animation = "";
+                btn.style.backgroundColor = "";
             }, 2000);
         }
 
