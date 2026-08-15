@@ -56,31 +56,31 @@
         .btn-combo:hover { background-color: #219150; }
         .btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
 
-        /* Botão da Música - TAMANHO REDUZIDO */
+        /* Botão da Música (+10% maior) */
         #btn-music {
             position: fixed;
-            bottom: 40px;
+            bottom: 30px;
             left: 50%;
-            transform: translateX(-50%); /* Centraliza perfeitamente na horizontal */
-            background-color: #27ae60; /* Verde */
+            transform: translateX(-50%); 
+            background-color: #27ae60; 
             color: white;
             border: none;
-            padding: 12px 20px; /* Espaçamento menor (antes era 18px 28px) */
+            padding: 14px 22px; /* Aumentado 10% */
             border-radius: 50px;
             cursor: pointer;
-            font-size: 17px; /* Fonte menor (antes era 24px) */
+            font-size: 18px; /* Aumentado 10% */
             font-weight: bold;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
             z-index: 998;
             transition: 0.3s;
             display: flex;
             align-items: center;
-            gap: 10px;
-            white-space: nowrap; /* Impede o texto de quebrar em duas linhas no celular */
+            gap: 8px;
+            white-space: nowrap; 
         }
         #btn-music:hover { 
             background-color: #219150; 
-            transform: translateX(-50%) scale(1.05); /* Efeito de crescer mantendo o centro */
+            transform: translateX(-50%) scale(1.05); 
         }
 
         /* SEÇÃO DE DOAÇÃO */
@@ -275,13 +275,14 @@
 
         function tocarMusica() {
             audio.play().catch(e => console.log("Erro ao reproduzir áudio:", e));
-            btnMusic.style.display = "none"; // Faz o botão sumir permanentemente após clicar
+            btnMusic.style.display = "none"; // Faz o botão sumir permanentemente
         }
 
         // --- FUNÇÃO DO E-BOOK GRATUITO ---
         function baixarGratis() {
-            // ---> COLE O LINK DE DOWNLOAD DO FIREBASE ENTRE AS ASPAS ABAIXO <---
-            const urlDoArquivo = "gs://loja-ebooks-cristaos-8f1b6.firebasestorage.app/transformando-minha-vida.zip";
+            // Convertido o endereço gs:// interno do Firebase para o endereço público https://
+            const urlDoArquivo = "https://firebasestorage.googleapis.com/v0/b/loja-ebooks-cristaos-8f1b6.firebasestorage.app/o/transformando-minha-vida.zip?alt=media";
+            
             window.open(urlDoArquivo, '_blank');
         }
 
