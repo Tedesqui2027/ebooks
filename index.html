@@ -56,26 +56,32 @@
         .btn-combo:hover { background-color: #219150; }
         .btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
 
-        /* Botão da Música */
+        /* Botão da Música Modificado */
         #btn-music {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background-color: #2c3e50;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%); /* Centraliza perfeitamente na horizontal */
+            background-color: #27ae60; /* Verde */
             color: white;
             border: none;
-            padding: 12px 18px;
+            padding: 18px 28px; /* Mais espaçamento interno */
             border-radius: 50px;
             cursor: pointer;
-            font-size: 16px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-size: 24px; /* Fonte 50% maior */
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             z-index: 998;
             transition: 0.3s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            white-space: nowrap; /* Impede o texto de quebrar em duas linhas no celular */
         }
-        #btn-music:hover { background-color: #1a252f; transform: scale(1.05); }
+        #btn-music:hover { 
+            background-color: #219150; 
+            transform: translateX(-50%) scale(1.05); /* Efeito de crescer mantendo o centro */
+        }
 
         /* SEÇÃO DE DOAÇÃO */
         .donation-section {
@@ -161,15 +167,15 @@
 </head>
 <body>
 
-    <!-- ÁUDIO DE FUNDO -->
+    <!-- ÁUDIO DE FUNDO (Removido o autoplay para forçar o clique no celular) -->
     <!-- Coloque o arquivo musica-fundo.mp3 na mesma pasta que este arquivo index.html -->
-    <audio id="bg-music" loop autoplay>
+    <audio id="bg-music" loop>
         <source src="musica-fundo.mp3" type="audio/mpeg">
         Seu navegador não suporta o elemento de áudio.
     </audio>
 
     <!-- BOTÃO FLUTUANTE DA MÚSICA -->
-    <button id="btn-music" onclick="toggleMusic()">🔊 Música ON</button>
+    <button id="btn-music" onclick="tocarMusica()">🔊 Ouvir LOUVOR</button>
 
     <header class="hero">
         <h1>Alimento para a Alma</h1>
@@ -267,27 +273,14 @@
         const audio = document.getElementById("bg-music");
         const btnMusic = document.getElementById("btn-music");
 
-        // Tenta tocar a música no primeiro clique do usuário na tela (Bypass de bloqueio do navegador)
-        document.body.addEventListener('click', function() {
-            if (audio.paused && btnMusic.innerText.includes("ON")) {
-                audio.play().catch(e => console.log("Áudio bloqueado aguardando interação."));
-            }
-        }, { once: true });
-
-        function toggleMusic() {
-            if (audio.paused) {
-                audio.play();
-                btnMusic.innerText = "🔊 Música ON";
-            } else {
-                audio.pause();
-                btnMusic.innerText = "🔇 Música OFF";
-            }
+        function tocarMusica() {
+            audio.play().catch(e => console.log("Erro ao reproduzir áudio:", e));
+            btnMusic.style.display = "none"; // Faz o botão sumir permanentemente
         }
 
         // --- FUNÇÃO DO E-BOOK GRATUITO ---
         function baixarGratis() {
             // Este link abaixo pode ser direto para um PDF na Vercel ou Firebase
-            // Coloque o nome do arquivo que você enviará para a sua hospedagem
             const urlDoArquivo = "transformando-minha-vida.zip";
             window.open(urlDoArquivo, '_blank');
         }
