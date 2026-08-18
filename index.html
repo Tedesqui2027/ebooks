@@ -328,8 +328,15 @@
             }
         });
 
-        // --- FUNÇÃO DO E-BOOK GRATUITO ---
+        // --- FUNÇÃO DO E-BOOK GRATUITO (COM GOOGLE ANALYTICS) ---
         function baixarGratis() {
+            // Avisa o Google Analytics que o botão foi clicado
+            if (typeof gtag === 'function') {
+                gtag('event', 'download_ebook_gratis', {
+                    'nome_arquivo': 'transformando-minha-vida'
+                });
+            }
+
             // Convertido o endereço gs:// interno do Firebase para o endereço público https://
             const urlDoArquivo = "https://firebasestorage.googleapis.com/v0/b/loja-ebooks-cristaos-8f1b6.firebasestorage.app/o/transformando-minha-vida.zip?alt=media";
             
