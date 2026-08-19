@@ -10,7 +10,7 @@ const catalogo = {
     'ebook-7': { titulo: 'Alimentados pela Palavra de Deus', preco: 19.90 },
     'ebook-8': { titulo: 'Casamento Segundo a Bíblia', preco: 19.90 },
     'ebook-9': { titulo: 'Libertados pelo Poder de Deus', preco: 19.90 },
-    'combo-all': { titulo: 'Combo 9 E-books Cristãos', preco: 99.90 }
+    'combo-all': { titulo: 'Combo 9 E-books Cristãos', preco: 49.90 }
 };
 
 module.exports = async function handler(req, res) {
